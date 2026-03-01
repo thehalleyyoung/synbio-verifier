@@ -49,3 +49,6 @@ Documentation = "https://bioprover.readthedocs.io"
 
 [tool.setuptools.packages.find]
 include = ["bioprover*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

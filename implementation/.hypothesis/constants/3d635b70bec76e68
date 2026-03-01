@@ -1,4 +1,0 @@
-# file: /Users/halleyyoung/Documents/div/mathdivergence/best/bioprover-ai-cegar-synbio-verify-repair/implementation/bioprover/soundness.py
-# hypothesis_version: 6.148.7
-
-[0.0, 1.0, 'ErrorBudget', 'SoundnessAnnotation', 'SoundnessLevel', 'combined', 'combined_additive', 'delta', 'discretization', 'effective_magnitude', 'epsilon', 'inf', 'is_independent', 'is_sound', 'lipschitz_factor', 'magnitude', 'name', 'origin', 'sources', 'truncation']

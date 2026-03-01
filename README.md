@@ -181,7 +181,7 @@ Circuits with 8+ species can be verified using compositional mode (see above).
 ## Architecture
 
 ```
-bioprover/
+bioprover/               # Python package
 ├── models/              # BioModel, Species, Reaction, kinetic laws
 ├── temporal/            # Bio-STL parser, formula AST, robustness
 ├── cegar/               # CEGAR engine, refinement strategies
@@ -194,11 +194,17 @@ bioprover/
 ├── stochastic/          # Moment closure, SSA, FSP
 ├── ai/                  # ML predicate predictor
 └── repair/              # CEGIS synthesis
+tests/                   # Unit, integration, property-based tests
+examples/                # Usage examples
+experiments/             # Experiment scripts and results
+docs/                    # API reference, tool paper
+reviews/                 # Peer review documents
+research/                # Research artifacts (ideation, proposals, theory)
 ```
 
 ## API Reference
 
-See [API.md](API.md) for the full API reference.
+See [docs/API.md](docs/API.md) for the full API reference.
 
 ## License
 
