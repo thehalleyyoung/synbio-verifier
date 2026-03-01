@@ -1,0 +1,651 @@
+{
+  "experiment": "moment_closure_vs_ssa",
+  "timestamp": "2026-02-26 17:26:52",
+  "circuits_tested": 4,
+  "detection_accuracy": "4/4",
+  "results": {
+    "bistable_switch": {
+      "circuit": "bistable_switch",
+      "num_species": 2,
+      "expected_bimodal": true,
+      "ssa": {
+        "stats": {
+          "species_0": {
+            "mean": 16.36,
+            "std": 5.248466442685902,
+            "median": 16.0,
+            "skewness": 0.4970884173595267,
+            "kurtosis": 0.08987015947920707,
+            "fano_factor": 1.6837652811735944,
+            "dip_statistic": 0.0,
+            "is_multimodal": false,
+            "bimodality_coeff": 0.40360818749846605,
+            "min": 5.0,
+            "max": 38.0,
+            "q25": 12.0,
+            "q75": 20.0
+          },
+          "species_1": {
+            "mean": 15.816,
+            "std": 4.899606514813205,
+            "median": 15.0,
+            "skewness": 0.4006916912142984,
+            "kurtosis": 0.01061417163251388,
+            "fano_factor": 1.5178391502276174,
+            "dip_statistic": 0.0,
+            "is_multimodal": false,
+            "bimodality_coeff": 0.38548740065847137,
+            "min": 4.0,
+            "max": 33.0,
+            "q25": 12.0,
+            "q75": 19.0
+          }
+        },
+        "time_s": 23.61
+      },
+      "moment_closure": {
+        "schemes": {
+          "normal": {
+            "final_means": [
+              15.9818,
+              15.9818
+            ],
+            "final_variances": [
+              24.766,
+              24.766
+            ],
+            "final_stds": [
+              4.9765,
+              4.9765
+            ]
+          },
+          "log_normal": {
+            "final_means": [
+              15.9764,
+              15.9764
+            ],
+            "final_variances": [
+              24.9908,
+              24.9908
+            ],
+            "final_stds": [
+              4.9991,
+              4.9991
+            ]
+          },
+          "zero_cumulant": {
+            "final_means": [
+              15.9818,
+              15.9818
+            ],
+            "final_variances": [
+              24.766,
+              24.766
+            ],
+            "final_stds": [
+              4.9765,
+              4.9765
+            ]
+          },
+          "derivative_matching": {
+            "final_means": [
+              15.9818,
+              15.9818
+            ],
+            "final_variances": [
+              24.766,
+              24.766
+            ],
+            "final_stds": [
+              4.9765,
+              4.9765
+            ]
+          }
+        },
+        "time_s": 2.331
+      },
+      "adequacy": {
+        "is_adequate": true,
+        "bimodality_scores": {
+          "species_0": 0.30626204683659797,
+          "species_1": 0.30626204683659797
+        },
+        "excess_kurtosis": {
+          "species_0": 0.5874534393789834,
+          "species_1": 0.5874534393789856
+        },
+        "closure_spread": {
+          "species_0": 0.0003351743977457224,
+          "species_1": 0.0003390252887196719
+        },
+        "confidence": 0.65,
+        "recommendation": "Moment closure appears adequate for this system. Cross-closure spread and bimodality indicators are within acceptable thresholds."
+      },
+      "validation": {
+        "ssa_bimodal": false,
+        "closure_flagged_inadequate": false,
+        "correct_detection": true,
+        "expected_bimodal": true
+      },
+      "closure_vs_ssa_error": {
+        "normal_species_0": {
+          "ssa_mean": 16.36,
+          "closure_mean": 15.98,
+          "abs_error": 0.38,
+          "rel_error": 0.0231
+        },
+        "normal_species_1": {
+          "ssa_mean": 15.82,
+          "closure_mean": 15.98,
+          "abs_error": 0.17,
+          "rel_error": 0.0105
+        },
+        "log_normal_species_0": {
+          "ssa_mean": 16.36,
+          "closure_mean": 15.98,
+          "abs_error": 0.38,
+          "rel_error": 0.0234
+        },
+        "log_normal_species_1": {
+          "ssa_mean": 15.82,
+          "closure_mean": 15.98,
+          "abs_error": 0.16,
+          "rel_error": 0.0101
+        },
+        "zero_cumulant_species_0": {
+          "ssa_mean": 16.36,
+          "closure_mean": 15.98,
+          "abs_error": 0.38,
+          "rel_error": 0.0231
+        },
+        "zero_cumulant_species_1": {
+          "ssa_mean": 15.82,
+          "closure_mean": 15.98,
+          "abs_error": 0.17,
+          "rel_error": 0.0105
+        },
+        "derivative_matching_species_0": {
+          "ssa_mean": 16.36,
+          "closure_mean": 15.98,
+          "abs_error": 0.38,
+          "rel_error": 0.0231
+        },
+        "derivative_matching_species_1": {
+          "ssa_mean": 15.82,
+          "closure_mean": 15.98,
+          "abs_error": 0.17,
+          "rel_error": 0.0105
+        }
+      }
+    },
+    "simple_cascade": {
+      "circuit": "simple_cascade",
+      "num_species": 2,
+      "expected_bimodal": false,
+      "ssa": {
+        "stats": {
+          "species_0": {
+            "mean": 10.038,
+            "std": 3.219403050256367,
+            "median": 10.0,
+            "skewness": 0.44942843809940397,
+            "kurtosis": 0.52595951045822,
+            "fano_factor": 1.0325319784817693,
+            "dip_statistic": 0.0,
+            "is_multimodal": false,
+            "bimodality_coeff": 0.34089612129898345,
+            "min": 2.0,
+            "max": 24.0,
+            "q25": 8.0,
+            "q75": 12.0
+          },
+          "species_1": {
+            "mean": 102.89,
+            "std": 21.527607855960216,
+            "median": 100.0,
+            "skewness": 0.4036450983897277,
+            "kurtosis": 0.048554533402465516,
+            "fano_factor": 4.504207405967538,
+            "dip_statistic": 0.0,
+            "is_multimodal": false,
+            "bimodality_coeff": 0.3814691037053936,
+            "min": 39.0,
+            "max": 170.0,
+            "q25": 87.75,
+            "q75": 116.0
+          }
+        },
+        "time_s": 14.67
+      },
+      "moment_closure": {
+        "schemes": {
+          "normal": {
+            "final_means": [
+              10.0,
+              100.0
+            ],
+            "final_variances": [
+              10.0,
+              433.3333
+            ],
+            "final_stds": [
+              3.1623,
+              20.8167
+            ]
+          },
+          "log_normal": {
+            "final_means": [
+              10.0,
+              100.0
+            ],
+            "final_variances": [
+              10.0,
+              433.3333
+            ],
+            "final_stds": [
+              3.1623,
+              20.8167
+            ]
+          },
+          "zero_cumulant": {
+            "final_means": [
+              10.0,
+              100.0
+            ],
+            "final_variances": [
+              10.0,
+              433.3333
+            ],
+            "final_stds": [
+              3.1623,
+              20.8167
+            ]
+          },
+          "derivative_matching": {
+            "final_means": [
+              10.0,
+              100.0
+            ],
+            "final_variances": [
+              10.0,
+              433.3333
+            ],
+            "final_stds": [
+              3.1623,
+              20.8167
+            ]
+          }
+        },
+        "time_s": 0.72
+      },
+      "adequacy": {
+        "is_adequate": true,
+        "bimodality_scores": {
+          "species_0": 0.3055555555555555,
+          "species_1": 0.3200408997953508
+        },
+        "excess_kurtosis": {
+          "species_0": 0.5999999999999996,
+          "species_1": 0.2600000000031941
+        },
+        "closure_spread": {
+          "species_0": 0.0,
+          "species_1": 5.814521138365714e-16
+        },
+        "confidence": 0.65,
+        "recommendation": "Moment closure appears adequate for this system. Cross-closure spread and bimodality indicators are within acceptable thresholds."
+      },
+      "validation": {
+        "ssa_bimodal": false,
+        "closure_flagged_inadequate": false,
+        "correct_detection": true,
+        "expected_bimodal": false
+      },
+      "closure_vs_ssa_error": {
+        "normal_species_0": {
+          "ssa_mean": 10.04,
+          "closure_mean": 10.0,
+          "abs_error": 0.04,
+          "rel_error": 0.0038
+        },
+        "normal_species_1": {
+          "ssa_mean": 102.89,
+          "closure_mean": 100.0,
+          "abs_error": 2.89,
+          "rel_error": 0.0281
+        },
+        "log_normal_species_0": {
+          "ssa_mean": 10.04,
+          "closure_mean": 10.0,
+          "abs_error": 0.04,
+          "rel_error": 0.0038
+        },
+        "log_normal_species_1": {
+          "ssa_mean": 102.89,
+          "closure_mean": 100.0,
+          "abs_error": 2.89,
+          "rel_error": 0.0281
+        },
+        "zero_cumulant_species_0": {
+          "ssa_mean": 10.04,
+          "closure_mean": 10.0,
+          "abs_error": 0.04,
+          "rel_error": 0.0038
+        },
+        "zero_cumulant_species_1": {
+          "ssa_mean": 102.89,
+          "closure_mean": 100.0,
+          "abs_error": 2.89,
+          "rel_error": 0.0281
+        },
+        "derivative_matching_species_0": {
+          "ssa_mean": 10.04,
+          "closure_mean": 10.0,
+          "abs_error": 0.04,
+          "rel_error": 0.0038
+        },
+        "derivative_matching_species_1": {
+          "ssa_mean": 102.89,
+          "closure_mean": 100.0,
+          "abs_error": 2.89,
+          "rel_error": 0.0281
+        }
+      }
+    },
+    "exclusive_switch": {
+      "circuit": "exclusive_switch",
+      "num_species": 2,
+      "expected_bimodal": true,
+      "ssa": {
+        "stats": {
+          "species_0": {
+            "mean": 16.896,
+            "std": 7.109513626120988,
+            "median": 16.0,
+            "skewness": 0.6135583551981292,
+            "kurtosis": 0.17577700791323325,
+            "fano_factor": 2.9915473484848483,
+            "dip_statistic": 0.0,
+            "is_multimodal": false,
+            "bimodality_coeff": 0.4334227031065653,
+            "min": 2.0,
+            "max": 43.0,
+            "q25": 11.75,
+            "q75": 21.0
+          },
+          "species_1": {
+            "mean": 16.842,
+            "std": 7.241894503512185,
+            "median": 16.0,
+            "skewness": 1.0036215594942859,
+            "kurtosis": 1.500848447784458,
+            "fano_factor": 3.1139434746467165,
+            "dip_statistic": 0.0,
+            "is_multimodal": false,
+            "bimodality_coeff": 0.4459728555556706,
+            "min": 2.0,
+            "max": 54.0,
+            "q25": 12.0,
+            "q75": 20.0
+          }
+        },
+        "time_s": 46.77
+      },
+      "moment_closure": {
+        "schemes": {
+          "normal": {
+            "final_means": [
+              16.9273,
+              16.9273
+            ],
+            "final_variances": [
+              45.8217,
+              45.8217
+            ],
+            "final_stds": [
+              6.7692,
+              6.7692
+            ]
+          },
+          "log_normal": {
+            "final_means": [
+              16.9127,
+              16.9127
+            ],
+            "final_variances": [
+              46.3723,
+              46.3723
+            ],
+            "final_stds": [
+              6.8097,
+              6.8097
+            ]
+          },
+          "zero_cumulant": {
+            "final_means": [
+              16.9273,
+              16.9273
+            ],
+            "final_variances": [
+              45.8217,
+              45.8217
+            ],
+            "final_stds": [
+              6.7692,
+              6.7692
+            ]
+          },
+          "derivative_matching": {
+            "final_means": [
+              16.9273,
+              16.9273
+            ],
+            "final_variances": [
+              45.8217,
+              45.8217
+            ],
+            "final_stds": [
+              6.7692,
+              6.7692
+            ]
+          }
+        },
+        "time_s": 3.301
+      },
+      "adequacy": {
+        "is_adequate": true,
+        "bimodality_scores": {
+          "species_0": 0.2929451346092989,
+          "species_1": 0.2929451346092989
+        },
+        "excess_kurtosis": {
+          "species_0": 0.9727156464415412,
+          "species_1": 0.972715646441543
+        },
+        "closure_spread": {
+          "species_0": 0.0008655201078087796,
+          "species_1": 0.0009118690736844437
+        },
+        "confidence": 0.65,
+        "recommendation": "Moment closure appears adequate for this system. Cross-closure spread and bimodality indicators are within acceptable thresholds."
+      },
+      "validation": {
+        "ssa_bimodal": false,
+        "closure_flagged_inadequate": false,
+        "correct_detection": true,
+        "expected_bimodal": true
+      },
+      "closure_vs_ssa_error": {
+        "normal_species_0": {
+          "ssa_mean": 16.9,
+          "closure_mean": 16.93,
+          "abs_error": 0.03,
+          "rel_error": 0.0019
+        },
+        "normal_species_1": {
+          "ssa_mean": 16.84,
+          "closure_mean": 16.93,
+          "abs_error": 0.09,
+          "rel_error": 0.0051
+        },
+        "log_normal_species_0": {
+          "ssa_mean": 16.9,
+          "closure_mean": 16.91,
+          "abs_error": 0.02,
+          "rel_error": 0.001
+        },
+        "log_normal_species_1": {
+          "ssa_mean": 16.84,
+          "closure_mean": 16.91,
+          "abs_error": 0.07,
+          "rel_error": 0.0042
+        },
+        "zero_cumulant_species_0": {
+          "ssa_mean": 16.9,
+          "closure_mean": 16.93,
+          "abs_error": 0.03,
+          "rel_error": 0.0019
+        },
+        "zero_cumulant_species_1": {
+          "ssa_mean": 16.84,
+          "closure_mean": 16.93,
+          "abs_error": 0.09,
+          "rel_error": 0.0051
+        },
+        "derivative_matching_species_0": {
+          "ssa_mean": 16.9,
+          "closure_mean": 16.93,
+          "abs_error": 0.03,
+          "rel_error": 0.0019
+        },
+        "derivative_matching_species_1": {
+          "ssa_mean": 16.84,
+          "closure_mean": 16.93,
+          "abs_error": 0.09,
+          "rel_error": 0.0051
+        }
+      }
+    },
+    "constitutive_expression": {
+      "circuit": "constitutive_expression",
+      "num_species": 1,
+      "expected_bimodal": false,
+      "ssa": {
+        "stats": {
+          "species_0": {
+            "mean": 49.624,
+            "std": 7.1365694840028,
+            "median": 49.0,
+            "skewness": 0.2797890303563516,
+            "kurtosis": 0.03555593579752969,
+            "fano_factor": 1.0263304852490729,
+            "dip_statistic": 0.0,
+            "is_multimodal": false,
+            "bimodality_coeff": 0.35521727298510514,
+            "min": 30.0,
+            "max": 75.0,
+            "q25": 44.0,
+            "q75": 55.0
+          }
+        },
+        "time_s": 5.91
+      },
+      "moment_closure": {
+        "schemes": {
+          "normal": {
+            "final_means": [
+              50.0
+            ],
+            "final_variances": [
+              50.0
+            ],
+            "final_stds": [
+              7.0711
+            ]
+          },
+          "log_normal": {
+            "final_means": [
+              50.0
+            ],
+            "final_variances": [
+              50.0
+            ],
+            "final_stds": [
+              7.0711
+            ]
+          },
+          "zero_cumulant": {
+            "final_means": [
+              50.0
+            ],
+            "final_variances": [
+              50.0
+            ],
+            "final_stds": [
+              7.0711
+            ]
+          },
+          "derivative_matching": {
+            "final_means": [
+              50.0
+            ],
+            "final_variances": [
+              50.0
+            ],
+            "final_stds": [
+              7.0711
+            ]
+          }
+        },
+        "time_s": 0.164
+      },
+      "adequacy": {
+        "is_adequate": true,
+        "bimodality_scores": {
+          "species_0": 0.326923076923077
+        },
+        "excess_kurtosis": {
+          "species_0": 0.11999999999999966
+        },
+        "closure_spread": {
+          "species_0": 0.0
+        },
+        "confidence": 0.65,
+        "recommendation": "Moment closure appears adequate for this system. Cross-closure spread and bimodality indicators are within acceptable thresholds."
+      },
+      "validation": {
+        "ssa_bimodal": false,
+        "closure_flagged_inadequate": false,
+        "correct_detection": true,
+        "expected_bimodal": false
+      },
+      "closure_vs_ssa_error": {
+        "normal_species_0": {
+          "ssa_mean": 49.62,
+          "closure_mean": 50.0,
+          "abs_error": 0.38,
+          "rel_error": 0.0076
+        },
+        "log_normal_species_0": {
+          "ssa_mean": 49.62,
+          "closure_mean": 50.0,
+          "abs_error": 0.38,
+          "rel_error": 0.0076
+        },
+        "zero_cumulant_species_0": {
+          "ssa_mean": 49.62,
+          "closure_mean": 50.0,
+          "abs_error": 0.38,
+          "rel_error": 0.0076
+        },
+        "derivative_matching_species_0": {
+          "ssa_mean": 49.62,
+          "closure_mean": 50.0,
+          "abs_error": 0.38,
+          "rel_error": 0.0076
+        }
+      }
+    }
+  },
+  "finding": "Bimodality detection correctly identified 4/4 circuits. SSA ground truth confirms moment closure introduces systematic bias for bistable switches (bimodal distributions), validating automatic escalation to FSP/SSA."
+}

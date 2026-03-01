@@ -1,0 +1,143 @@
+{
+  "experiment": "scalability_sweep_real",
+  "timeout_s": 30.0,
+  "sizes": [
+    3,
+    5,
+    8,
+    10,
+    12,
+    15,
+    20
+  ],
+  "timestamp": "2026-02-26T06:05:59",
+  "data_points": [
+    {
+      "species_count": 3,
+      "parameter_count": 0,
+      "reaction_count": 6,
+      "mode": "monolithic",
+      "time_s": 0.01,
+      "iterations": 1,
+      "status": "VERIFIED",
+      "peak_memory_mb": 0.3
+    },
+    {
+      "species_count": 3,
+      "parameter_count": 0,
+      "reaction_count": 6,
+      "mode": "compositional",
+      "time_s": 0.01,
+      "iterations": 1,
+      "status": "VERIFIED",
+      "peak_memory_mb": 0.3,
+      "n_modules": 1
+    },
+    {
+      "species_count": 5,
+      "parameter_count": 0,
+      "reaction_count": 10,
+      "mode": "monolithic",
+      "time_s": 2.41,
+      "iterations": 1,
+      "status": "VERIFIED",
+      "peak_memory_mb": 22.3
+    },
+    {
+      "species_count": 5,
+      "parameter_count": 0,
+      "reaction_count": 10,
+      "mode": "compositional",
+      "time_s": 0.11,
+      "iterations": 2,
+      "status": "VERIFIED",
+      "peak_memory_mb": 1.3,
+      "n_modules": 2
+    },
+    {
+      "species_count": 8,
+      "mode": "monolithic",
+      "time_s": 35.01,
+      "status": "TIMEOUT"
+    },
+    {
+      "species_count": 8,
+      "parameter_count": 0,
+      "reaction_count": 16,
+      "mode": "compositional",
+      "time_s": 0.17,
+      "iterations": 3,
+      "status": "VERIFIED",
+      "peak_memory_mb": 3.2,
+      "n_modules": 3
+    },
+    {
+      "species_count": 10,
+      "mode": "monolithic",
+      "time_s": 35.01,
+      "status": "TIMEOUT"
+    },
+    {
+      "species_count": 10,
+      "parameter_count": 0,
+      "reaction_count": 20,
+      "mode": "compositional",
+      "time_s": 0.32,
+      "iterations": 4,
+      "status": "VERIFIED",
+      "peak_memory_mb": 5.5,
+      "n_modules": 4
+    },
+    {
+      "species_count": 12,
+      "mode": "monolithic",
+      "time_s": 35.52,
+      "status": "TIMEOUT"
+    },
+    {
+      "species_count": 12,
+      "parameter_count": 0,
+      "reaction_count": 24,
+      "mode": "compositional",
+      "time_s": 0.47,
+      "iterations": 4,
+      "status": "VERIFIED",
+      "peak_memory_mb": 7.8,
+      "n_modules": 4
+    },
+    {
+      "species_count": 15,
+      "mode": "monolithic",
+      "time_s": 35.59,
+      "status": "TIMEOUT"
+    },
+    {
+      "species_count": 15,
+      "parameter_count": 0,
+      "reaction_count": 30,
+      "mode": "compositional",
+      "time_s": 0.59,
+      "iterations": 5,
+      "status": "VERIFIED",
+      "peak_memory_mb": 10.4,
+      "n_modules": 5
+    },
+    {
+      "species_count": 20,
+      "mode": "monolithic",
+      "time_s": 35.67,
+      "status": "TIMEOUT"
+    },
+    {
+      "species_count": 20,
+      "parameter_count": 0,
+      "reaction_count": 40,
+      "mode": "compositional",
+      "time_s": 0.82,
+      "iterations": 7,
+      "status": "VERIFIED",
+      "peak_memory_mb": 13.6,
+      "n_modules": 7
+    }
+  ]
+}

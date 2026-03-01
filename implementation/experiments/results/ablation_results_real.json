@@ -1,0 +1,190 @@
+{
+  "experiment": "ablation_study_real",
+  "timestamp": "2026-02-26T06:09:36",
+  "results": [
+    {
+      "circuit": "toggle_switch",
+      "configuration": "auto",
+      "iterations": 1,
+      "time_s": 0.01,
+      "status": "VERIFIED",
+      "predicates": 0,
+      "strategies_used": {},
+      "coverage": 1.0
+    },
+    {
+      "circuit": "toggle_switch",
+      "configuration": "structural",
+      "iterations": 1,
+      "time_s": 0.01,
+      "status": "VERIFIED",
+      "predicates": 0,
+      "strategies_used": {},
+      "coverage": 1.0
+    },
+    {
+      "circuit": "toggle_switch",
+      "configuration": "monotonicity",
+      "iterations": 1,
+      "time_s": 0.01,
+      "status": "VERIFIED",
+      "predicates": 0,
+      "strategies_used": {},
+      "coverage": 1.0
+    },
+    {
+      "circuit": "toggle_switch",
+      "configuration": "timescale",
+      "iterations": 1,
+      "time_s": 0.01,
+      "status": "VERIFIED",
+      "predicates": 0,
+      "strategies_used": {},
+      "coverage": 1.0
+    },
+    {
+      "circuit": "repressilator",
+      "configuration": "auto",
+      "iterations": 1,
+      "time_s": 1.11,
+      "status": "VERIFIED",
+      "predicates": 0,
+      "strategies_used": {},
+      "coverage": 1.0
+    },
+    {
+      "circuit": "repressilator",
+      "configuration": "structural",
+      "iterations": 1,
+      "time_s": 1.13,
+      "status": "VERIFIED",
+      "predicates": 0,
+      "strategies_used": {},
+      "coverage": 1.0
+    },
+    {
+      "circuit": "repressilator",
+      "configuration": "monotonicity",
+      "iterations": 1,
+      "time_s": 1.12,
+      "status": "VERIFIED",
+      "predicates": 0,
+      "strategies_used": {},
+      "coverage": 1.0
+    },
+    {
+      "circuit": "repressilator",
+      "configuration": "timescale",
+      "iterations": 1,
+      "time_s": 1.13,
+      "status": "VERIFIED",
+      "predicates": 0,
+      "strategies_used": {},
+      "coverage": 1.0
+    },
+    {
+      "circuit": "cascade_5",
+      "configuration": "auto",
+      "iterations": 1,
+      "time_s": 1.1,
+      "status": "VERIFIED",
+      "predicates": 0,
+      "strategies_used": {},
+      "coverage": 1.0
+    },
+    {
+      "circuit": "cascade_5",
+      "configuration": "structural",
+      "iterations": 1,
+      "time_s": 1.13,
+      "status": "VERIFIED",
+      "predicates": 0,
+      "strategies_used": {},
+      "coverage": 1.0
+    },
+    {
+      "circuit": "cascade_5",
+      "configuration": "monotonicity",
+      "iterations": 1,
+      "time_s": 1.1,
+      "status": "VERIFIED",
+      "predicates": 0,
+      "strategies_used": {},
+      "coverage": 1.0
+    },
+    {
+      "circuit": "cascade_5",
+      "configuration": "timescale",
+      "iterations": 1,
+      "time_s": 1.11,
+      "status": "VERIFIED",
+      "predicates": 0,
+      "strategies_used": {},
+      "coverage": 1.0
+    },
+    {
+      "circuit": "cascade_8",
+      "configuration": "auto",
+      "time_s": 35.01,
+      "status": "TIMEOUT"
+    },
+    {
+      "circuit": "cascade_8",
+      "configuration": "structural",
+      "time_s": 35.0,
+      "status": "TIMEOUT"
+    },
+    {
+      "circuit": "cascade_8",
+      "configuration": "monotonicity",
+      "time_s": 35.01,
+      "status": "TIMEOUT"
+    },
+    {
+      "circuit": "cascade_8",
+      "configuration": "timescale",
+      "time_s": 35.01,
+      "status": "TIMEOUT"
+    },
+    {
+      "circuit": "multi_2x3",
+      "configuration": "auto",
+      "iterations": 1,
+      "time_s": 16.87,
+      "status": "VERIFIED",
+      "predicates": 0,
+      "strategies_used": {},
+      "coverage": 1.0
+    },
+    {
+      "circuit": "multi_2x3",
+      "configuration": "structural",
+      "iterations": 1,
+      "time_s": 16.99,
+      "status": "VERIFIED",
+      "predicates": 0,
+      "strategies_used": {},
+      "coverage": 1.0
+    },
+    {
+      "circuit": "multi_2x3",
+      "configuration": "monotonicity",
+      "iterations": 1,
+      "time_s": 17.11,
+      "status": "VERIFIED",
+      "predicates": 0,
+      "strategies_used": {},
+      "coverage": 1.0
+    },
+    {
+      "circuit": "multi_2x3",
+      "configuration": "timescale",
+      "iterations": 1,
+      "time_s": 17.19,
+      "status": "VERIFIED",
+      "predicates": 0,
+      "strategies_used": {},
+      "coverage": 1.0
+    }
+  ]
+}
