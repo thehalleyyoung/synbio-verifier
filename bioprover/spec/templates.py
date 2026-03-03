@@ -382,6 +382,172 @@ def _build_separation(params: Dict[str, Any]) -> STLFormula:
 
 
 # ======================================================================== #
+#  Extended Bio-STL: steady-state, oscillation, stochastic fragments       #
+# ======================================================================== #
+
+def _build_ss_convergence_tolerance(params: Dict[str, Any]) -> STLFormula:
+    """SS[T,ε](φ): after settling_time, x stays within ε of steady-state value.
+
+    Formula: G[T_settle, T_end]( x_ss - ε ≤ x ≤ x_ss + ε )
+    """
+    species: str = params["species"]
+    x_ss: float = params["steady_state_value"]
+    eps: float = params["tolerance"]
+    t_settle: float = params["settling_time"]
+    t_end: float = params.get("time_horizon", 10 * t_settle)
+
+    in_band = STLAnd(
+        Predicate(make_var_expr(species), ComparisonOp.GE, x_ss - eps),
+        Predicate(make_var_expr(species), ComparisonOp.LE, x_ss + eps),
+    )
+    return Always(in_band, Interval(t_settle, t_end))
+
+
+def _build_damped_oscillation(params: Dict[str, Any]) -> STLFormula:
+    """Damped oscillation: successive peak amplitudes decrease by factor α.
+
+    Encodes a two-cycle finite witness: in cycle 1 the signal peaks above an
+    initial amplitude A, and in cycle 2 the peak is bounded above by A while
+    still exceeding A·α (confirming continued but decaying oscillation).
+    """
+    species: str = params["species"]
+    alpha: float = params["decay_rate"]
+    p_min: float = params["min_period"]
+    p_max: float = params["max_period"]
+    initial_amplitude: float = params.get("initial_amplitude", 10.0)
+
+    # Cycle 1 [0, p_max]: signal peaks above initial amplitude
+    cycle1_peak = Eventually(
+        Predicate(make_var_expr(species), ComparisonOp.GT, initial_amplitude),
+        Interval(0, p_max),
+    )
+    # Cycle 1: signal also drops below decayed level (confirms oscillation)
+    cycle1_trough = Eventually(
+        Predicate(make_var_expr(species), ComparisonOp.LT,
+                  initial_amplitude * alpha),
+        Interval(0, p_max),
+    )
+    # Cycle 2 [p_min, 2·p_max]: peak bounded by initial amplitude (decay)
+    cycle2_bounded = Always(
+        Predicate(make_var_expr(species), ComparisonOp.LT, initial_amplitude),
+        Interval(p_min, 2 * p_max),
+    )
+    # Cycle 2: still oscillating — exceeds decayed amplitude
+    cycle2_peak = Eventually(
+        Predicate(make_var_expr(species), ComparisonOp.GT,
+                  initial_amplitude * alpha),
+        Interval(p_min, 2 * p_max),
+    )
+
+    return STLAnd(
+        STLAnd(cycle1_peak, cycle1_trough),
+        STLAnd(cycle2_peak, cycle2_bounded),
+    )
+
+
+def _build_sustained_oscillation(params: Dict[str, Any]) -> STLFormula:
+    """Sustained oscillation with period and amplitude bounds.
+
+    Formula: G[T_settle, T_end]( F[0, P_max](x > A_high) ∧ F[0, P_max](x < A_low) )
+    """
+    species: str = params["species"]
+    p_min: float = params["period_min"]
+    p_max: float = params["period_max"]
+    a_hi: float = params["amplitude_high"]
+    a_lo: float = params["amplitude_low"]
+    t_settle: float = params["settling_time"]
+    t_end: float = params.get("time_horizon", t_settle + 10 * p_max)
+
+    reaches_high = Eventually(
+        Predicate(make_var_expr(species), ComparisonOp.GT, a_hi),
+        Interval(0, p_max),
+    )
+    reaches_low = Eventually(
+        Predicate(make_var_expr(species), ComparisonOp.LT, a_lo),
+        Interval(0, p_max),
+    )
+    return Always(STLAnd(reaches_high, reaches_low), Interval(t_settle, t_end))
+
+
+def _build_probability_threshold(params: Dict[str, Any]) -> STLFormula:
+    """Stochastic threshold: P( G[0,T](x > threshold) ) ≥ p_min.
+
+    Returns the inner sample-path STL formula G[0,T](x > threshold).
+    The probabilistic bound min_probability is enforced by the stochastic
+    verification engine via statistical model checking.
+    """
+    species: str = params["species"]
+    threshold: float = params["threshold"]
+    t_horizon: float = params["time_horizon"]
+    # min_probability is consumed by the stochastic verification layer
+    return Always(
+        Predicate(make_var_expr(species), ComparisonOp.GT, threshold),
+        Interval(0, t_horizon),
+    )
+
+
+def _build_bimodal_steady_state(params: Dict[str, Any]) -> STLFormula:
+    """Bimodal distribution: steady state near one of two distinct modes.
+
+    Formula: G[T_settle, T_end]( (|x - m1| < sep/2) ∨ (|x - m2| < sep/2) )
+    Each trajectory should settle near one of the two modes.
+    """
+    species: str = params["species"]
+    m1: float = params["mode1_center"]
+    m2: float = params["mode2_center"]
+    sep: float = params["separation"]
+    t_settle: float = params.get("settling_time", 50.0)
+    t_end: float = params.get("time_horizon", 200.0)
+    half_sep = sep / 2.0
+
+    near_mode1 = STLAnd(
+        Predicate(make_var_expr(species), ComparisonOp.GE, m1 - half_sep),
+        Predicate(make_var_expr(species), ComparisonOp.LE, m1 + half_sep),
+    )
+    near_mode2 = STLAnd(
+        Predicate(make_var_expr(species), ComparisonOp.GE, m2 - half_sep),
+        Predicate(make_var_expr(species), ComparisonOp.LE, m2 + half_sep),
+    )
+    return Always(STLOr(near_mode1, near_mode2), Interval(t_settle, t_end))
+
+
+def _build_switching_rate(params: Dict[str, Any]) -> STLFormula:
+    """Bounded noise-induced switching between bistable states.
+
+    Once the signal enters a state (high or low), it must dwell there for
+    at least 1/max_switching_rate time units, bounding the transition rate.
+    """
+    species: str = params["species"]
+    s_lo: float = params["state_low"]
+    s_hi: float = params["state_high"]
+    max_rate: float = params["max_switching_rate"]
+    t_obs: float = params["observation_time"]
+    min_dwell = 1.0 / max_rate if max_rate > 0 else t_obs
+
+    # In high state → stay above low boundary for min_dwell time
+    in_high = Predicate(make_var_expr(species), ComparisonOp.GT, s_hi)
+    stay_above = Always(
+        Predicate(make_var_expr(species), ComparisonOp.GT, s_lo),
+        Interval(0, min_dwell),
+    )
+    high_dwell = Always(
+        STLImplies(in_high, stay_above), Interval(0, t_obs),
+    )
+
+    # In low state → stay below high boundary for min_dwell time
+    in_low = Predicate(make_var_expr(species), ComparisonOp.LT, s_lo)
+    stay_below = Always(
+        Predicate(make_var_expr(species), ComparisonOp.LT, s_hi),
+        Interval(0, min_dwell),
+    )
+    low_dwell = Always(
+        STLImplies(in_low, stay_below), Interval(0, t_obs),
+    )
+
+    return STLAnd(high_dwell, low_dwell)
+
+
+# ======================================================================== #
 #                         TemplateLibrary                                   #
 # ======================================================================== #
 
@@ -662,4 +828,199 @@ class TemplateLibrary:
                 TemplateParameter("time_horizon", "Observation window",
                                   default=200.0, units="min", param_type="time"),
             ],
+        ))
+
+        # ---- Extended Bio-STL fragments (steady-state, oscillation, stochastic) ----
+
+        # 11. Steady-state convergence with tolerance — SS[T,ε](φ)
+        self.register(SpecificationTemplate(
+            name="steady_state_convergence",
+            description="SS[T,ε](φ): after settling time T, species x stays "
+                        "within tolerance ε of its steady-state value x_ss. "
+                        "Formula: G[T, T_end]( |x - x_ss| < ε )",
+            category="stability",
+            builder=_build_ss_convergence_tolerance,
+            parameters=[
+                TemplateParameter("species", "Species to monitor",
+                                  param_type="species"),
+                TemplateParameter("steady_state_value",
+                                  "Expected steady-state concentration",
+                                  default=5.0, units="nM",
+                                  param_type="threshold"),
+                TemplateParameter("tolerance",
+                                  "Acceptable deviation from steady state",
+                                  default=0.5, units="nM",
+                                  param_type="threshold"),
+                TemplateParameter("settling_time",
+                                  "Time after which convergence must hold",
+                                  default=50.0, units="min", param_type="time"),
+                TemplateParameter("time_horizon",
+                                  "End of observation window",
+                                  default=500.0, units="min", param_type="time"),
+            ],
+            notes="Overwrites the simpler steady_state_convergence template "
+                  "with an explicit settling-time + tolerance formulation.",
+        ))
+
+        # 12. Damped oscillation detection
+        self.register(SpecificationTemplate(
+            name="damped_oscillation",
+            description="Damped oscillation: successive peak amplitudes "
+                        "decrease by decay factor α. Two-cycle finite "
+                        "witness checks peak decay between periods.",
+            category="dynamic",
+            builder=_build_damped_oscillation,
+            parameters=[
+                TemplateParameter("species", "Oscillating species",
+                                  param_type="species"),
+                TemplateParameter("decay_rate",
+                                  "Fraction of amplitude retained per cycle "
+                                  "(0 < α < 1)",
+                                  default=0.5, param_type="number"),
+                TemplateParameter("min_period",
+                                  "Minimum oscillation period",
+                                  default=20.0, units="min", param_type="time"),
+                TemplateParameter("max_period",
+                                  "Maximum oscillation period",
+                                  default=60.0, units="min", param_type="time"),
+                TemplateParameter("initial_amplitude",
+                                  "Reference peak amplitude in cycle 1",
+                                  default=10.0, units="nM",
+                                  param_type="threshold"),
+            ],
+            notes="Uses a finite two-cycle unrolling; extend with additional "
+                  "cycles for stronger guarantees.",
+        ))
+
+        # 13. Sustained oscillation with period and amplitude bounds
+        self.register(SpecificationTemplate(
+            name="sustained_oscillation",
+            description="Sustained oscillation: after settling, signal "
+                        "repeatedly exceeds amplitude_high and drops below "
+                        "amplitude_low within each period window. "
+                        "Formula: G[T_settle, T_end]( F[0, P_max](x > A_hi) "
+                        "∧ F[0, P_max](x < A_lo) )",
+            category="dynamic",
+            builder=_build_sustained_oscillation,
+            parameters=[
+                TemplateParameter("species", "Oscillating species",
+                                  param_type="species"),
+                TemplateParameter("period_min",
+                                  "Minimum oscillation period",
+                                  default=20.0, units="min", param_type="time"),
+                TemplateParameter("period_max",
+                                  "Maximum oscillation period",
+                                  default=60.0, units="min", param_type="time"),
+                TemplateParameter("amplitude_high",
+                                  "Threshold that must be exceeded each cycle",
+                                  default=8.0, units="nM",
+                                  param_type="threshold"),
+                TemplateParameter("amplitude_low",
+                                  "Threshold that must be undercut each cycle",
+                                  default=2.0, units="nM",
+                                  param_type="threshold"),
+                TemplateParameter("settling_time",
+                                  "Transient settling time before checking",
+                                  default=30.0, units="min", param_type="time"),
+                TemplateParameter("time_horizon",
+                                  "End of observation window",
+                                  default=500.0, units="min", param_type="time"),
+            ],
+        ))
+
+        # 14. Stochastic threshold probability — P(G[0,T](x > θ)) ≥ p_min
+        self.register(SpecificationTemplate(
+            name="probability_threshold",
+            description="Probabilistic specification: P( G[0,T](x > θ) ) ≥ "
+                        "p_min. Builder returns the inner sample-path STL "
+                        "formula; min_probability is consumed by the "
+                        "stochastic verification engine.",
+            category="stochastic",
+            builder=_build_probability_threshold,
+            parameters=[
+                TemplateParameter("species", "Species to monitor",
+                                  param_type="species"),
+                TemplateParameter("threshold",
+                                  "Concentration threshold θ",
+                                  default=5.0, units="nM",
+                                  param_type="threshold"),
+                TemplateParameter("time_horizon",
+                                  "Time horizon T for the inner G operator",
+                                  default=100.0, units="min", param_type="time"),
+                TemplateParameter("min_probability",
+                                  "Minimum probability p_min (used by "
+                                  "statistical model checker)",
+                                  default=0.95, param_type="number"),
+            ],
+            notes="The returned STL formula is the deterministic sample-path "
+                  "property. Use min_probability with a statistical model "
+                  "checker (e.g., sequential hypothesis testing) to enforce "
+                  "the probabilistic bound.",
+        ))
+
+        # 15. Bimodal steady-state distribution detection
+        self.register(SpecificationTemplate(
+            name="bimodal_steady_state",
+            description="Bimodal distribution: after settling, the signal "
+                        "stays near one of two distinct modes. "
+                        "Formula: G[T, T_end]( |x-m1|<sep/2 ∨ |x-m2|<sep/2 )",
+            category="stochastic",
+            builder=_build_bimodal_steady_state,
+            parameters=[
+                TemplateParameter("species", "Species to monitor",
+                                  param_type="species"),
+                TemplateParameter("mode1_center",
+                                  "Center of first distribution mode",
+                                  default=2.0, units="nM",
+                                  param_type="threshold"),
+                TemplateParameter("mode2_center",
+                                  "Center of second distribution mode",
+                                  default=8.0, units="nM",
+                                  param_type="threshold"),
+                TemplateParameter("separation",
+                                  "Width of acceptance band around each mode",
+                                  default=2.0, units="nM",
+                                  param_type="threshold"),
+                TemplateParameter("settling_time",
+                                  "Transient settling time",
+                                  default=50.0, units="min", param_type="time"),
+                TemplateParameter("time_horizon",
+                                  "End of observation window",
+                                  default=200.0, units="min", param_type="time"),
+            ],
+            notes="Verify across an ensemble of stochastic trajectories to "
+                  "confirm bimodality of the steady-state distribution.",
+        ))
+
+        # 16. Noise-induced switching rate
+        self.register(SpecificationTemplate(
+            name="switching_rate",
+            description="Bounded noise-induced switching: transitions between "
+                        "bistable states (high/low) occur at most at "
+                        "max_switching_rate, enforced via minimum dwell time "
+                        "1/rate in each state.",
+            category="stochastic",
+            builder=_build_switching_rate,
+            parameters=[
+                TemplateParameter("species", "Bistable species",
+                                  param_type="species"),
+                TemplateParameter("state_low",
+                                  "Upper boundary of low stable state",
+                                  default=2.0, units="nM",
+                                  param_type="threshold"),
+                TemplateParameter("state_high",
+                                  "Lower boundary of high stable state",
+                                  default=8.0, units="nM",
+                                  param_type="threshold"),
+                TemplateParameter("max_switching_rate",
+                                  "Maximum allowed transitions per time unit",
+                                  default=0.1, units="1/min",
+                                  param_type="number"),
+                TemplateParameter("observation_time",
+                                  "Total observation window",
+                                  default=200.0, units="min", param_type="time"),
+            ],
+            notes="Minimum dwell time = 1/max_switching_rate. Useful for "
+                  "verifying that stochastic noise does not cause excessively "
+                  "rapid toggling between states.",
         ))

@@ -48,6 +48,18 @@ from .ensemble import (
     ConvergenceDetector,
     TrajectoryStore,
 )
+from .lna import (
+    LNASolver,
+    LNAResult,
+    BimodalityDetector,
+    StabilityType,
+    StochasticAnalysisPipeline,
+    AnalysisMethod,
+    MethodSelection,
+    SteadyStateInfo,
+    lna_error_budget,
+    validate_lna_applicability,
+)
 
 __all__ = [
     "Reaction",
@@ -81,4 +93,14 @@ __all__ = [
     "EnsembleStatistics",
     "ConvergenceDetector",
     "TrajectoryStore",
+    "LNASolver",
+    "LNAResult",
+    "BimodalityDetector",
+    "StabilityType",
+    "StochasticAnalysisPipeline",
+    "AnalysisMethod",
+    "MethodSelection",
+    "SteadyStateInfo",
+    "lna_error_budget",
+    "validate_lna_applicability",
 ]

@@ -1,0 +1,56 @@
+{
+  "experiment": "ablation_study_setup",
+  "timestamp": "2026-03-02 03:52:11",
+  "controller_source": "module",
+  "controller_info": {
+    "source": "bioprover.ai.online_learner.AblationController",
+    "status": "loaded"
+  },
+  "ablation_configs": [
+    {
+      "name": "full_pipeline",
+      "description": "All Path B components enabled",
+      "components": {
+        "ag_soundness": true,
+        "lna_solver": true,
+        "moment_closure": true,
+        "extended_benchmarks": true,
+        "biostl_templates": true
+      }
+    },
+    {
+      "name": "no_lna",
+      "description": "Path B without LNA solver",
+      "components": {
+        "ag_soundness": true,
+        "lna_solver": false,
+        "moment_closure": true,
+        "extended_benchmarks": true,
+        "biostl_templates": true
+      }
+    },
+    {
+      "name": "no_ag_soundness",
+      "description": "Path B without AG soundness prover",
+      "components": {
+        "ag_soundness": false,
+        "lna_solver": true,
+        "moment_closure": true,
+        "extended_benchmarks": true,
+        "biostl_templates": true
+      }
+    },
+    {
+      "name": "minimal",
+      "description": "Only moment closure and benchmarks",
+      "components": {
+        "ag_soundness": false,
+        "lna_solver": false,
+        "moment_closure": true,
+        "extended_benchmarks": true,
+        "biostl_templates": false
+      }
+    }
+  ],
+  "num_configs": 4
+}

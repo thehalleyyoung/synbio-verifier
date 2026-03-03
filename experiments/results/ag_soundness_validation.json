@@ -1,0 +1,27 @@
+{
+  "experiment": "ag_soundness_validation",
+  "timestamp": "2026-03-02 03:52:11",
+  "system": "2-module toggle switch with feedback",
+  "conditions_met": true,
+  "spectral_radius": 0.3,
+  "error_bound": 1.272369,
+  "convergence_rate": 0.7,
+  "robustness_margin": -0.772369,
+  "certificate_status": "ProofStatus.FAILED",
+  "theorem_used": "AG Composition (Theorems 1+2)",
+  "lipschitz_checks": [
+    {
+      "name": "Lipschitz(toggle_A\u2192toggle_B)",
+      "satisfied": false,
+      "value": 85001.707954,
+      "threshold": 0.3
+    },
+    {
+      "name": "Lipschitz(toggle_B\u2192toggle_A)",
+      "satisfied": false,
+      "value": 66831.356144,
+      "threshold": 0.3
+    }
+  ],
+  "runtime_s": 0.002
+}

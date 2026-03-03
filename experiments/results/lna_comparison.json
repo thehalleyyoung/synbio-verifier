@@ -1,0 +1,55 @@
+{
+  "experiment": "lna_vs_moment_closure_comparison",
+  "timestamp": "2026-03-02 03:52:11",
+  "system": "birth-death: \u2205 \u2192k1 X, X \u2192k2 \u2205",
+  "parameters": {
+    "k1": 10.0,
+    "k2": 0.5,
+    "volume": 1.0,
+    "T": 20.0
+  },
+  "exact_steady_state": {
+    "mean": 20.0,
+    "variance": 20.0
+  },
+  "methods": [
+    {
+      "method": "LNA",
+      "final_mean": 19.9991,
+      "final_variance": 19.9991,
+      "mean_error": 4.5e-05,
+      "variance_error": 4.5e-05,
+      "runtime_s": 0.0329,
+      "error_bound_mean": 220264.840196,
+      "error_bound_cov": 4851659982.654199,
+      "is_valid": true
+    },
+    {
+      "method": "moment_closure_normal",
+      "final_mean": 19.9991,
+      "final_variance": 19.9991,
+      "mean_error": 4.5e-05,
+      "variance_error": 4.5e-05,
+      "runtime_s": 0.0413,
+      "error_bound": "N/A (no rigorous bound for moment closure)"
+    },
+    {
+      "method": "LNA_moment_closure_module",
+      "final_mean": 19.9991,
+      "final_variance": 19.9991,
+      "mean_error": 4.5e-05,
+      "variance_error": 4.5e-05,
+      "runtime_s": 0.0341,
+      "error_bound": "N/A"
+    },
+    {
+      "method": "exact_analytical",
+      "final_mean": 20.0,
+      "final_variance": 20.0,
+      "mean_error": 0.0,
+      "variance_error": 0.0,
+      "runtime_s": 0.0,
+      "error_bound": "exact"
+    }
+  ]
+}

@@ -83,14 +83,11 @@ def build_parser() -> argparse.ArgumentParser:
     )
     p_verify.add_argument(
         "--model", "-m", required=True, metavar="FILE",
-        help="Path to SBML model file.",
+        help="Path to model file (SBML or .sbol).",
     )
     p_verify.add_argument(
         "--spec", "-s", required=True, metavar="SPEC",
         help="Bio-STL specification (file path or inline string).",
-    )
-    p_verify.add_argument(
-        "--mode", choices=["full", "bounded", "compositional"], default="full",
         help="Verification mode (default: full).",
     )
     p_verify.add_argument(
@@ -115,7 +112,7 @@ def build_parser() -> argparse.ArgumentParser:
     )
     p_synth.add_argument(
         "--model", "-m", required=True, metavar="FILE",
-        help="Path to SBML model file.",
+        help="Path to model file (SBML or .sbol).",
     )
     p_synth.add_argument(
         "--spec", "-s", required=True, metavar="SPEC",
@@ -144,7 +141,7 @@ def build_parser() -> argparse.ArgumentParser:
     )
     p_repair.add_argument(
         "--model", "-m", required=True, metavar="FILE",
-        help="Path to SBML model file.",
+        help="Path to model file (SBML or .sbol).",
     )
     p_repair.add_argument(
         "--spec", "-s", required=True, metavar="SPEC",
@@ -199,7 +196,7 @@ def build_parser() -> argparse.ArgumentParser:
     )
     p_info.add_argument(
         "--model", "-m", required=True, metavar="FILE",
-        help="Path to SBML model file.",
+        help="Path to model file (SBML or .sbol).",
     )
     p_info.add_argument(
         "--spec", "-s", metavar="SPEC",
@@ -257,7 +254,10 @@ def load_config(path: str) -> Dict[str, Any]:
 
 
 def load_model(path: str) -> Any:
-    """Import an SBML model from *path*.
+    """Import a model from *path* (SBML, SBOL, or GenBank).
+
+    Supports ``.sbol`` files (SBOL v2/v3), ``.gb``/``.gbk``/``.genbank``
+    files (GenBank annotated sequences), and SBML (default).
 
     Returns:
         A :class:`~bioprover.models.bio_model.BioModel` instance.
@@ -267,6 +267,18 @@ def load_model(path: str) -> Any:
     """
     if not Path(path).exists():
         raise FileNotFoundError(f"Model file not found: {path}")
+
+    if path.endswith(".sbol"):
+        from bioprover.models.sbol_import import SBOLImporter  # noqa: WPS433
+
+        importer = SBOLImporter()
+        return importer.import_file(path)
+
+    if path.endswith((".gb", ".gbk", ".genbank")):
+        from bioprover.models.genbank_import import GenBankImporter  # noqa: WPS433
+
+        importer = GenBankImporter()
+        return importer.import_file(path)
 
     from bioprover.models.sbml_import import SBMLImporter  # noqa: WPS433
 

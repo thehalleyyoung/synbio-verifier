@@ -1,0 +1,29 @@
+{
+  "experiment": "benchmark_coverage",
+  "timestamp": "2026-03-02 03:52:11",
+  "coverage": {
+    "total_circuits": 11,
+    "kinetics_distribution": {
+      "michaelis_menten": 5,
+      "allosteric": 2,
+      "hill": 4
+    },
+    "topology_distribution": {
+      "cascade": 4,
+      "competitive": 2,
+      "feedback": 2,
+      "multi_feedback": 2,
+      "oscillator": 1
+    },
+    "difficulty_distribution": {
+      "MEDIUM": 5,
+      "HARD": 5,
+      "FRONTIER": 1
+    },
+    "species_range": [
+      5,
+      12
+    ]
+  },
+  "runtime_s": 0.001
+}

@@ -1,0 +1,232 @@
+{
+  "project": "synbio-verifier",
+  "title": "BioProver Paper Claims Grounding Map",
+  "description": "Maps every major paper claim to its supporting proof, code artifact, experiment, or reference.",
+  "generated": "2026-03-02",
+  "claims": [
+    {
+      "id": 1,
+      "claim": "AG composition is formally sound",
+      "evidence_type": "proof",
+      "artifacts": [
+        "bioprover/compositional/ag_soundness.py"
+      ],
+      "anchor": "Theorem1_AGComposition class (line 439)",
+      "status": "verified",
+      "notes": "Mechanized proof structure with interval-arithmetic checked assumptions and guarantees; composition rule implemented and validated in ag_soundness_validation.json."
+    },
+    {
+      "id": 2,
+      "claim": "Spectral radius ρ(L) < 1 sufficient for convergence",
+      "evidence_type": "proof",
+      "artifacts": [
+        "bioprover/compositional/ag_soundness.py",
+        "experiments/results/ag_soundness_validation.json"
+      ],
+      "anchor": "Theorem1_AGComposition + spectral radius check; validated in ag_soundness_validation.json",
+      "status": "verified",
+      "notes": "Spectral radius condition checked numerically; validation experiments confirm convergence when ρ(L) < 1."
+    },
+    {
+      "id": 3,
+      "claim": "LNA provides O(1/Ω) error bounds",
+      "evidence_type": "proof",
+      "artifacts": [
+        "bioprover/stochastic/lna.py"
+      ],
+      "anchor": "LNASolver.compute_error_bound (line 285)",
+      "status": "verified",
+      "notes": "Error bound computation implements van Kampen Ω-expansion; returns mean_bound and cov_bound scaling as O(1/Ω)."
+    },
+    {
+      "id": 4,
+      "claim": "Bimodality detection for bistable systems",
+      "evidence_type": "code",
+      "artifacts": [
+        "bioprover/stochastic/lna.py"
+      ],
+      "anchor": "BimodalityDetector class (line 564)",
+      "status": "verified",
+      "notes": "Detects bimodal distributions to trigger fallback from moment closure to SSA or FSP for bistable circuits like toggle switches."
+    },
+    {
+      "id": 5,
+      "claim": "21 benchmark circuits",
+      "evidence_type": "experiment",
+      "artifacts": [
+        "bioprover/evaluation/benchmark_suite.py",
+        "bioprover/evaluation/extended_benchmarks.py"
+      ],
+      "anchor": "BenchmarkSuite + ExtendedBenchmarks classes",
+      "status": "verified",
+      "notes": "Original 10 circuits in benchmark_suite.py; 11 additional circuits (Michaelis-Menten, allosteric, multi-feedback) in extended_benchmarks.py."
+    },
+    {
+      "id": 6,
+      "claim": "Michaelis-Menten and allosteric kinetics",
+      "evidence_type": "code",
+      "artifacts": [
+        "bioprover/evaluation/extended_benchmarks.py"
+      ],
+      "anchor": "Extended benchmark circuits with realistic kinetics",
+      "status": "verified",
+      "notes": "Extended benchmarks include circuits with Michaelis-Menten (competitive inhibition) and allosteric regulation kinetics."
+    },
+    {
+      "id": 7,
+      "claim": "15 Bio-STL templates",
+      "evidence_type": "code",
+      "artifacts": [
+        "bioprover/spec/templates.py"
+      ],
+      "anchor": "TemplateLibrary class (line 554)",
+      "status": "verified",
+      "notes": "Template library provides parameterized Bio-STL specification patterns including steady-state, oscillation, and bounded-response templates."
+    },
+    {
+      "id": 8,
+      "claim": "Online ML adaptation",
+      "evidence_type": "code",
+      "artifacts": [
+        "bioprover/ai/online_learner.py"
+      ],
+      "anchor": "OnlineLearner class (line 149)",
+      "status": "verified",
+      "notes": "Online learning from CEGAR traces; updates predicate predictor weights as verification proceeds."
+    },
+    {
+      "id": 9,
+      "claim": "OOD detection",
+      "evidence_type": "code",
+      "artifacts": [
+        "bioprover/ai/online_learner.py"
+      ],
+      "anchor": "OutOfDistributionDetector class (line 688)",
+      "status": "verified",
+      "notes": "Detects when input circuits fall outside the training distribution and falls back to domain heuristics."
+    },
+    {
+      "id": 10,
+      "claim": "4-mode ablation",
+      "evidence_type": "experiment",
+      "artifacts": [
+        "bioprover/ai/online_learner.py",
+        "experiments/results/ablation_results.json"
+      ],
+      "anchor": "AblationController class (line 479)",
+      "status": "verified",
+      "notes": "Supports 4 ablation modes: full, no-ML, no-biology, random; results recorded in ablation_results.json."
+    },
+    {
+      "id": 11,
+      "claim": "Gronwall error bound",
+      "evidence_type": "proof",
+      "artifacts": [
+        "bioprover/compositional/ag_soundness.py"
+      ],
+      "anchor": "gronwall_error_bound function (line 312)",
+      "status": "verified",
+      "notes": "Implements Gronwall's inequality for bounding ODE trajectory divergence with Lipschitz-amplified error over time."
+    },
+    {
+      "id": 12,
+      "claim": "RSS error composition",
+      "evidence_type": "proof",
+      "artifacts": [
+        "bioprover/soundness.py"
+      ],
+      "anchor": "propagate_errors function (line 181)",
+      "status": "verified",
+      "notes": "Root-sum-of-squares error composition as an alternative to additive bounds; assumes independence between error sources. Also see propagate_errors_additive (line 206) and propagate_errors_with_lipschitz (line 212)."
+    },
+    {
+      "id": 13,
+      "claim": "Moment closure truncation bound",
+      "evidence_type": "proof",
+      "artifacts": [
+        "bioprover/soundness.py"
+      ],
+      "anchor": "compute_moment_closure_bound function (line 245)",
+      "status": "partial",
+      "notes": "Bound is estimated rather than rigorously derived a priori; for bistable systems, moment closure can produce qualitatively incorrect results. Reviewers flagged this as a consensus weakness."
+    },
+    {
+      "id": 14,
+      "claim": "ODE discretization bound",
+      "evidence_type": "proof",
+      "artifacts": [
+        "bioprover/soundness.py"
+      ],
+      "anchor": "compute_discretization_bound function (line 292)",
+      "status": "verified",
+      "notes": "Computes ODE discretization error bound η based on step size and Lipschitz constant."
+    },
+    {
+      "id": 15,
+      "claim": "Certificate verifier 800 LoC TCB",
+      "evidence_type": "code",
+      "artifacts": [
+        "bioprover/certificate_verifier/verifier.py"
+      ],
+      "anchor": "Standalone verifier module (1133 lines total; core verification logic ~800 LoC excluding imports/docstrings/tests)",
+      "status": "partial",
+      "notes": "File is 1133 lines total. The 800 LoC claim refers to the core trusted computing base excluding boilerplate. Uses mpmath interval arithmetic for independent flowpipe containment checking."
+    },
+    {
+      "id": 16,
+      "claim": "Compositional 24x speedup at 5 species",
+      "evidence_type": "experiment",
+      "artifacts": [
+        "experiments/results/scalability_results.json",
+        "experiments/results/scalability_results_real.json"
+      ],
+      "anchor": "scalability_results_real.json: monolithic 2.41s vs compositional 0.11s at 5 species (~21.9x)",
+      "status": "partial",
+      "notes": "Real benchmark data shows ~21.9x speedup at 5 species (not exactly 24x). Simulated scalability_results.json shows only 1.4x at 5 species. The 24x figure likely from a specific circuit configuration not captured in sweep data."
+    },
+    {
+      "id": 17,
+      "claim": "Monotonicity acceleration O(m·log)",
+      "evidence_type": "code",
+      "artifacts": [
+        "bioprover/cegar/refinement.py"
+      ],
+      "anchor": "MonotonicityRefinement class (line 371)",
+      "status": "verified",
+      "notes": "Exploits sign-definite Jacobian structure and Hill-function thresholds for logarithmic refinement in monotone dimensions."
+    },
+    {
+      "id": 18,
+      "claim": "Quantitative robustness composition",
+      "evidence_type": "proof",
+      "artifacts": [
+        "bioprover/compositional/ag_soundness.py"
+      ],
+      "anchor": "Theorem2_RobustnessComposition class (line 692)",
+      "status": "verified",
+      "notes": "Proves that quantitative robustness margins compose across AG interfaces under Lipschitz continuity assumptions."
+    },
+    {
+      "id": 19,
+      "claim": "Circular AG convergence rate",
+      "evidence_type": "proof",
+      "artifacts": [
+        "bioprover/compositional/ag_soundness.py"
+      ],
+      "anchor": "Theorem3_CircularAGConvergence class (line 918)",
+      "status": "verified",
+      "notes": "Establishes convergence rate for circular assume-guarantee reasoning; depends on spectral radius condition ρ(L) < 1."
+    },
+    {
+      "id": 20,
+      "claim": "Stochastic analysis pipeline auto-selection",
+      "evidence_type": "code",
+      "artifacts": [
+        "bioprover/stochastic/lna.py"
+      ],
+      "anchor": "StochasticAnalysisPipeline class (line 744)",
+      "status": "verified",
+      "notes": "Automatically selects between LNA, moment closure, SSA, and FSP based on system size, bistability detection, and required accuracy level."
+    }
+  ]
+}

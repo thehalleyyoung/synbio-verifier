@@ -1,8 +1,8 @@
 {
   "version": 4,
   "phase": "ideation",
-  "problem_slug": "bioprover-ai-cegar-synbio-verify-repair",
-  "problem_dir": "pipeline_3/bioprover-ai-cegar-synbio-verify-repair",
+  "problem_slug": "synbio-verifier",
+  "problem_dir": "pipeline_3/synbio-verifier",
   "proposals": {},
   "active_proposals": [],
   "abandoned_proposals": [],
@@ -13,8 +13,8 @@
     {
       "at": "2026-02-25T17:53:54Z",
       "event": "problem_crystallized",
-      "slug": "bioprover-ai-cegar-synbio-verify-repair",
-      "dir": "pipeline_3/bioprover-ai-cegar-synbio-verify-repair"
+      "slug": "synbio-verifier",
+      "dir": "pipeline_3/synbio-verifier"
     }
   ],
   "last_error": null,

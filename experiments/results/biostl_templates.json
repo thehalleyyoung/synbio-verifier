@@ -1,0 +1,652 @@
+{
+  "experiment": "biostl_template_inventory",
+  "timestamp": "2026-03-02 03:52:11",
+  "num_templates": 15,
+  "templates": [
+    {
+      "name": "correct_boolean_logic",
+      "description": "Genetic gate implements correct Boolean logic (NOT, AND, OR, etc.)",
+      "category": "logic",
+      "parameters": [
+        {
+          "name": "input_species",
+          "description": "Input signal species name",
+          "default": null,
+          "units": "",
+          "param_type": "species"
+        },
+        {
+          "name": "output_species",
+          "description": "Output reporter species name",
+          "default": null,
+          "units": "",
+          "param_type": "species"
+        },
+        {
+          "name": "high_threshold",
+          "description": "Concentration defining logic HIGH",
+          "default": 5.0,
+          "units": "nM",
+          "param_type": "threshold"
+        },
+        {
+          "name": "low_threshold",
+          "description": "Concentration defining logic LOW",
+          "default": 1.0,
+          "units": "nM",
+          "param_type": "threshold"
+        },
+        {
+          "name": "settling_time",
+          "description": "Time to reach stable output",
+          "default": 30.0,
+          "units": "min",
+          "param_type": "time"
+        },
+        {
+          "name": "time_horizon",
+          "description": "Total specification time",
+          "default": 200.0,
+          "units": "min",
+          "param_type": "time"
+        },
+        {
+          "name": "gate_type",
+          "description": "Boolean function (NOT, AND, OR)",
+          "default": "NOT",
+          "units": "",
+          "param_type": "number"
+        }
+      ],
+      "notes": "For multi-input gates, supply 'input_species_b' in kwargs."
+    },
+    {
+      "name": "oscillation",
+      "description": "Sustained periodic oscillation: repeated peaks and troughs within a period window",
+      "category": "dynamic",
+      "parameters": [
+        {
+          "name": "species",
+          "description": "Oscillating species name",
+          "default": null,
+          "units": "",
+          "param_type": "species"
+        },
+        {
+          "name": "period",
+          "description": "Expected oscillation period",
+          "default": 40.0,
+          "units": "min",
+          "param_type": "time"
+        },
+        {
+          "name": "amplitude",
+          "description": "Minimum peak concentration",
+          "default": 3.0,
+          "units": "nM",
+          "param_type": "threshold"
+        },
+        {
+          "name": "time_horizon",
+          "description": "Total observation time",
+          "default": 200.0,
+          "units": "min",
+          "param_type": "time"
+        }
+      ],
+      "notes": ""
+    },
+    {
+      "name": "bistability",
+      "description": "Two stable steady states with switching: system settles near one of two concentration levels",
+      "category": "memory",
+      "parameters": [
+        {
+          "name": "species",
+          "description": "Bistable species name",
+          "default": null,
+          "units": "",
+          "param_type": "species"
+        },
+        {
+          "name": "low_state",
+          "description": "Concentration of low stable state",
+          "default": 1.0,
+          "units": "nM",
+          "param_type": "threshold"
+        },
+        {
+          "name": "high_state",
+          "description": "Concentration of high stable state",
+          "default": 10.0,
+          "units": "nM",
+          "param_type": "threshold"
+        },
+        {
+          "name": "settling_time",
+          "description": "Time to settle into state",
+          "default": 50.0,
+          "units": "min",
+          "param_type": "time"
+        },
+        {
+          "name": "time_horizon",
+          "description": "Total specification time",
+          "default": 200.0,
+          "units": "min",
+          "param_type": "time"
+        }
+      ],
+      "notes": ""
+    },
+    {
+      "name": "adaptation",
+      "description": "Perfect adaptation: transient response followed by return to baseline level",
+      "category": "dynamic",
+      "parameters": [
+        {
+          "name": "species",
+          "description": "Adapting species name",
+          "default": null,
+          "units": "",
+          "param_type": "species"
+        },
+        {
+          "name": "baseline",
+          "description": "Baseline (pre-stimulus) level",
+          "default": 0.5,
+          "units": "nM",
+          "param_type": "threshold"
+        },
+        {
+          "name": "peak_min",
+          "description": "Minimum peak during response",
+          "default": 5.0,
+          "units": "nM",
+          "param_type": "threshold"
+        },
+        {
+          "name": "peak_time",
+          "description": "Time to reach peak",
+          "default": 10.0,
+          "units": "min",
+          "param_type": "time"
+        },
+        {
+          "name": "adaptation_time",
+          "description": "Time to return to baseline",
+          "default": 60.0,
+          "units": "min",
+          "param_type": "time"
+        }
+      ],
+      "notes": ""
+    },
+    {
+      "name": "monotone_dose_response",
+      "description": "Monotone input-output relationship: higher input leads to higher (or lower) output",
+      "category": "transfer_function",
+      "parameters": [
+        {
+          "name": "input_species",
+          "description": "Input signal species",
+          "default": null,
+          "units": "",
+          "param_type": "species"
+        },
+        {
+          "name": "output_species",
+          "description": "Output reporter species",
+          "default": null,
+          "units": "",
+          "param_type": "species"
+        },
+        {
+          "name": "input_low",
+          "description": "Low input threshold",
+          "default": 1.0,
+          "units": "nM",
+          "param_type": "threshold"
+        },
+        {
+          "name": "input_high",
+          "description": "High input threshold",
+          "default": 10.0,
+          "units": "nM",
+          "param_type": "threshold"
+        },
+        {
+          "name": "output_low",
+          "description": "Expected low output",
+          "default": 1.0,
+          "units": "nM",
+          "param_type": "threshold"
+        },
+        {
+          "name": "output_high",
+          "description": "Expected high output",
+          "default": 8.0,
+          "units": "nM",
+          "param_type": "threshold"
+        },
+        {
+          "name": "response_delay",
+          "description": "Max input-to-output delay",
+          "default": 20.0,
+          "units": "min",
+          "param_type": "time"
+        },
+        {
+          "name": "time_horizon",
+          "description": "Total specification time",
+          "default": 200.0,
+          "units": "min",
+          "param_type": "time"
+        }
+      ],
+      "notes": ""
+    },
+    {
+      "name": "pulse_generation",
+      "description": "Transient pulse: signal spikes above a level then returns to baseline",
+      "category": "dynamic",
+      "parameters": [
+        {
+          "name": "species",
+          "description": "Pulsing species name",
+          "default": null,
+          "units": "",
+          "param_type": "species"
+        },
+        {
+          "name": "peak_level",
+          "description": "Minimum peak amplitude",
+          "default": 5.0,
+          "units": "nM",
+          "param_type": "threshold"
+        },
+        {
+          "name": "peak_time",
+          "description": "Time window for peak",
+          "default": 15.0,
+          "units": "min",
+          "param_type": "time"
+        },
+        {
+          "name": "return_time",
+          "description": "Time by which signal returns",
+          "default": 60.0,
+          "units": "min",
+          "param_type": "time"
+        }
+      ],
+      "notes": ""
+    },
+    {
+      "name": "steady_state_convergence",
+      "description": "SS[T,\u03b5](\u03c6): after settling time T, species x stays within tolerance \u03b5 of its steady-state value x_ss. Formula: G[T, T_end]( |x - x_ss| < \u03b5 )",
+      "category": "stability",
+      "parameters": [
+        {
+          "name": "species",
+          "description": "Species to monitor",
+          "default": null,
+          "units": "",
+          "param_type": "species"
+        },
+        {
+          "name": "steady_state_value",
+          "description": "Expected steady-state concentration",
+          "default": 5.0,
+          "units": "nM",
+          "param_type": "threshold"
+        },
+        {
+          "name": "tolerance",
+          "description": "Acceptable deviation from steady state",
+          "default": 0.5,
+          "units": "nM",
+          "param_type": "threshold"
+        },
+        {
+          "name": "settling_time",
+          "description": "Time after which convergence must hold",
+          "default": 50.0,
+          "units": "min",
+          "param_type": "time"
+        },
+        {
+          "name": "time_horizon",
+          "description": "End of observation window",
+          "default": 500.0,
+          "units": "min",
+          "param_type": "time"
+        }
+      ],
+      "notes": "Overwrites the simpler steady_state_convergence template with an explicit settling-time + tolerance formulation."
+    },
+    {
+      "name": "rise_time",
+      "description": "Output must reach a threshold within a specified rise time",
+      "category": "performance",
+      "parameters": [
+        {
+          "name": "species",
+          "description": "Rising species name",
+          "default": null,
+          "units": "",
+          "param_type": "species"
+        },
+        {
+          "name": "threshold",
+          "description": "Target threshold to reach",
+          "default": 5.0,
+          "units": "nM",
+          "param_type": "threshold"
+        },
+        {
+          "name": "rise_time",
+          "description": "Maximum allowed rise time",
+          "default": 20.0,
+          "units": "min",
+          "param_type": "time"
+        }
+      ],
+      "notes": ""
+    },
+    {
+      "name": "overshoot_constraint",
+      "description": "Output must not exceed a maximum concentration level (overshoot prevention)",
+      "category": "performance",
+      "parameters": [
+        {
+          "name": "species",
+          "description": "Constrained species name",
+          "default": null,
+          "units": "",
+          "param_type": "species"
+        },
+        {
+          "name": "max_level",
+          "description": "Maximum allowed concentration",
+          "default": 15.0,
+          "units": "nM",
+          "param_type": "threshold"
+        },
+        {
+          "name": "time_horizon",
+          "description": "Observation window",
+          "default": 200.0,
+          "units": "min",
+          "param_type": "time"
+        }
+      ],
+      "notes": ""
+    },
+    {
+      "name": "separation",
+      "description": "Two signals maintain a minimum separation (never cross); useful for toggle-switch verification",
+      "category": "memory",
+      "parameters": [
+        {
+          "name": "species_high",
+          "description": "Species expected to be higher",
+          "default": null,
+          "units": "",
+          "param_type": "species"
+        },
+        {
+          "name": "species_low",
+          "description": "Species expected to be lower",
+          "default": null,
+          "units": "",
+          "param_type": "species"
+        },
+        {
+          "name": "min_gap",
+          "description": "Minimum concentration gap",
+          "default": 3.0,
+          "units": "nM",
+          "param_type": "threshold"
+        },
+        {
+          "name": "time_horizon",
+          "description": "Observation window",
+          "default": 200.0,
+          "units": "min",
+          "param_type": "time"
+        }
+      ],
+      "notes": ""
+    },
+    {
+      "name": "damped_oscillation",
+      "description": "Damped oscillation: successive peak amplitudes decrease by decay factor \u03b1. Two-cycle finite witness checks peak decay between periods.",
+      "category": "dynamic",
+      "parameters": [
+        {
+          "name": "species",
+          "description": "Oscillating species",
+          "default": null,
+          "units": "",
+          "param_type": "species"
+        },
+        {
+          "name": "decay_rate",
+          "description": "Fraction of amplitude retained per cycle (0 < \u03b1 < 1)",
+          "default": 0.5,
+          "units": "",
+          "param_type": "number"
+        },
+        {
+          "name": "min_period",
+          "description": "Minimum oscillation period",
+          "default": 20.0,
+          "units": "min",
+          "param_type": "time"
+        },
+        {
+          "name": "max_period",
+          "description": "Maximum oscillation period",
+          "default": 60.0,
+          "units": "min",
+          "param_type": "time"
+        },
+        {
+          "name": "initial_amplitude",
+          "description": "Reference peak amplitude in cycle 1",
+          "default": 10.0,
+          "units": "nM",
+          "param_type": "threshold"
+        }
+      ],
+      "notes": "Uses a finite two-cycle unrolling; extend with additional cycles for stronger guarantees."
+    },
+    {
+      "name": "sustained_oscillation",
+      "description": "Sustained oscillation: after settling, signal repeatedly exceeds amplitude_high and drops below amplitude_low within each period window. Formula: G[T_settle, T_end]( F[0, P_max](x > A_hi) \u2227 F[0, P_max](x < A_lo) )",
+      "category": "dynamic",
+      "parameters": [
+        {
+          "name": "species",
+          "description": "Oscillating species",
+          "default": null,
+          "units": "",
+          "param_type": "species"
+        },
+        {
+          "name": "period_min",
+          "description": "Minimum oscillation period",
+          "default": 20.0,
+          "units": "min",
+          "param_type": "time"
+        },
+        {
+          "name": "period_max",
+          "description": "Maximum oscillation period",
+          "default": 60.0,
+          "units": "min",
+          "param_type": "time"
+        },
+        {
+          "name": "amplitude_high",
+          "description": "Threshold that must be exceeded each cycle",
+          "default": 8.0,
+          "units": "nM",
+          "param_type": "threshold"
+        },
+        {
+          "name": "amplitude_low",
+          "description": "Threshold that must be undercut each cycle",
+          "default": 2.0,
+          "units": "nM",
+          "param_type": "threshold"
+        },
+        {
+          "name": "settling_time",
+          "description": "Transient settling time before checking",
+          "default": 30.0,
+          "units": "min",
+          "param_type": "time"
+        },
+        {
+          "name": "time_horizon",
+          "description": "End of observation window",
+          "default": 500.0,
+          "units": "min",
+          "param_type": "time"
+        }
+      ],
+      "notes": ""
+    },
+    {
+      "name": "probability_threshold",
+      "description": "Probabilistic specification: P( G[0,T](x > \u03b8) ) \u2265 p_min. Builder returns the inner sample-path STL formula; min_probability is consumed by the stochastic verification engine.",
+      "category": "stochastic",
+      "parameters": [
+        {
+          "name": "species",
+          "description": "Species to monitor",
+          "default": null,
+          "units": "",
+          "param_type": "species"
+        },
+        {
+          "name": "threshold",
+          "description": "Concentration threshold \u03b8",
+          "default": 5.0,
+          "units": "nM",
+          "param_type": "threshold"
+        },
+        {
+          "name": "time_horizon",
+          "description": "Time horizon T for the inner G operator",
+          "default": 100.0,
+          "units": "min",
+          "param_type": "time"
+        },
+        {
+          "name": "min_probability",
+          "description": "Minimum probability p_min (used by statistical model checker)",
+          "default": 0.95,
+          "units": "",
+          "param_type": "number"
+        }
+      ],
+      "notes": "The returned STL formula is the deterministic sample-path property. Use min_probability with a statistical model checker (e.g., sequential hypothesis testing) to enforce the probabilistic bound."
+    },
+    {
+      "name": "bimodal_steady_state",
+      "description": "Bimodal distribution: after settling, the signal stays near one of two distinct modes. Formula: G[T, T_end]( |x-m1|<sep/2 \u2228 |x-m2|<sep/2 )",
+      "category": "stochastic",
+      "parameters": [
+        {
+          "name": "species",
+          "description": "Species to monitor",
+          "default": null,
+          "units": "",
+          "param_type": "species"
+        },
+        {
+          "name": "mode1_center",
+          "description": "Center of first distribution mode",
+          "default": 2.0,
+          "units": "nM",
+          "param_type": "threshold"
+        },
+        {
+          "name": "mode2_center",
+          "description": "Center of second distribution mode",
+          "default": 8.0,
+          "units": "nM",
+          "param_type": "threshold"
+        },
+        {
+          "name": "separation",
+          "description": "Width of acceptance band around each mode",
+          "default": 2.0,
+          "units": "nM",
+          "param_type": "threshold"
+        },
+        {
+          "name": "settling_time",
+          "description": "Transient settling time",
+          "default": 50.0,
+          "units": "min",
+          "param_type": "time"
+        },
+        {
+          "name": "time_horizon",
+          "description": "End of observation window",
+          "default": 200.0,
+          "units": "min",
+          "param_type": "time"
+        }
+      ],
+      "notes": "Verify across an ensemble of stochastic trajectories to confirm bimodality of the steady-state distribution."
+    },
+    {
+      "name": "switching_rate",
+      "description": "Bounded noise-induced switching: transitions between bistable states (high/low) occur at most at max_switching_rate, enforced via minimum dwell time 1/rate in each state.",
+      "category": "stochastic",
+      "parameters": [
+        {
+          "name": "species",
+          "description": "Bistable species",
+          "default": null,
+          "units": "",
+          "param_type": "species"
+        },
+        {
+          "name": "state_low",
+          "description": "Upper boundary of low stable state",
+          "default": 2.0,
+          "units": "nM",
+          "param_type": "threshold"
+        },
+        {
+          "name": "state_high",
+          "description": "Lower boundary of high stable state",
+          "default": 8.0,
+          "units": "nM",
+          "param_type": "threshold"
+        },
+        {
+          "name": "max_switching_rate",
+          "description": "Maximum allowed transitions per time unit",
+          "default": 0.1,
+          "units": "1/min",
+          "param_type": "number"
+        },
+        {
+          "name": "observation_time",
+          "description": "Total observation window",
+          "default": 200.0,
+          "units": "min",
+          "param_type": "time"
+        }
+      ],
+      "notes": "Minimum dwell time = 1/max_switching_rate. Useful for verifying that stochastic noise does not cause excessively rapid toggling between states."
+    }
+  ]
+}

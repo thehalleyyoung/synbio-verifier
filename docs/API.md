@@ -18,17 +18,22 @@ covering only implemented classes and functions.
 8. [SMT (`bioprover.smt`)](#smt)
 9. [Encoding (`bioprover.encoding`)](#encoding)
 10. [Stochastic (`bioprover.stochastic`)](#stochastic)
+    - [LNA (`bioprover.stochastic.lna`)](#lna)
 11. [AI / ML (`bioprover.ai`)](#ai)
     - [Training Pipeline (`bioprover.ai.training_pipeline`)](#training-pipeline)
+    - [Online ML (`bioprover.ai.online_learner`)](#online-ml)
 12. [Compositional (`bioprover.compositional`)](#compositional)
     - [Circular AG (`bioprover.compositional.circular_ag`)](#circular-ag)
+    - [AG Soundness (`bioprover.compositional.ag_soundness`)](#ag-soundness)
 13. [Library (`bioprover.library`)](#library)
 14. [Evaluation (`bioprover.evaluation`)](#evaluation)
     - [Ablation (`bioprover.evaluation.ablation`)](#ablation)
+    - [Extended Benchmarks (`bioprover.evaluation.extended_benchmarks`)](#extended-benchmarks)
 15. [Visualization (`bioprover.visualization`)](#visualization)
 16. [CLI (`bioprover.cli`)](#cli)
 17. [Certificate Verifier (`bioprover.certificate_verifier`)](#certificate-verifier)
 18. [Error Propagation (`bioprover.soundness`)](#error-propagation)
+19. [Bio-STL Templates (`bioprover.spec.templates`)](#bio-stl-templates)
 
 ---
 
@@ -318,6 +323,99 @@ Container for named parameters.
 class SBMLImporter:
     def __init__(self) -> None: ...
     def import_model(self, filepath: str) -> BioModel: ...
+```
+
+### `SBOLImporter`
+
+Import SBOL v2/v3 files (XML/RDF) into BioProver's BioModel.
+Extracts `ComponentDefinition` elements (genes, promoters, RBSs,
+terminators), circuit topology from `ModuleDefinition` interactions,
+and maps common genetic parts to standard kinetic models with default
+parameters.
+
+```python
+from bioprover.models.sbol_import import SBOLImporter, parse_sbol_file
+
+class SBOLImporter:
+    def __init__(self) -> None: ...
+    def import_file(self, filepath: str) -> BioModel: ...
+    def import_string(self, xml_string: str, name: str = "sbol_model") -> BioModel: ...
+```
+
+| Method | Returns | Description |
+|--------|---------|-------------|
+| `import_file(filepath)` | `BioModel` | Parse an SBOL file and return a BioModel with auto-generated kinetics. |
+| `import_string(xml_string, name)` | `BioModel` | Parse an SBOL XML string. |
+
+**Convenience functions:**
+
+```python
+parse_sbol_file(filepath: str) -> BioModel
+parse_sbol_string(xml_string: str, name: str = "sbol_model") -> BioModel
+```
+
+**Part type → kinetic model mapping:**
+
+| SBOL Part Role | Kinetic Model | Default Parameters |
+|----------------|---------------|--------------------|
+| Promoter (constitutive) | `ConstitutiveProduction` | rate = 0.5 nM/min |
+| Promoter (activated) | `HillActivation` | Vmax=10, K=2, n=2 |
+| Promoter (repressed) | `HillRepression` | Vmax=10, K=2, n=2 |
+| CDS | Protein species | initial_conc = 0 |
+| All proteins | `LinearDegradation` | rate = 0.01 /min |
+
+```python
+from bioprover.models.sbol_import import parse_sbol_file
+from bioprover import verify
+
+model = parse_sbol_file("examples/inverter_circuit.sbol")
+result = verify(model, "G[0,100](GFP_protein > 0.0)")
+```
+
+### `GenBankImporter`
+
+Import GenBank flat files (.gb/.gbk/.genbank) into BioProver's BioModel.
+Extracts FEATURES table entries (CDS, promoter, terminator, RBS, regulatory)
+and maps them to kinetic models with default parameters. Only annotations
+are used — the DNA sequence is not parsed.
+
+```python
+from bioprover.models.genbank_import import GenBankImporter, parse_genbank_file
+
+class GenBankImporter:
+    def __init__(self) -> None: ...
+    def import_file(self, filepath: str) -> BioModel: ...
+    def import_string(self, text: str, name: str = "genbank_model") -> BioModel: ...
+```
+
+| Method | Returns | Description |
+|--------|---------|-------------|
+| `import_file(filepath)` | `BioModel` | Parse a GenBank file and return a BioModel with auto-generated kinetics. |
+| `import_string(text, name)` | `BioModel` | Parse a GenBank string. |
+
+**Convenience functions:**
+
+```python
+parse_genbank_file(filepath: str) -> BioModel
+parse_genbank_string(text: str, name: str = "genbank_model") -> BioModel
+```
+
+**GenBank feature → kinetic model mapping:**
+
+| GenBank Feature | Kinetic Model | Default Parameters |
+|-----------------|---------------|--------------------|
+| CDS (unregulated) | `ConstitutiveProduction` | rate = 0.5 nM/min |
+| CDS (activated) | `HillActivation` | Vmax=10, K=2, n=2 |
+| CDS (repressed) | `HillRepression` | Vmax=10, K=2, n=2 |
+| CDS | Protein species | initial_conc = 0 |
+| All proteins | `LinearDegradation` | rate = 0.01 /min |
+
+```python
+from bioprover.models.genbank_import import parse_genbank_file
+from bioprover import verify
+
+model = parse_genbank_file("examples/toggle_switch.gb")
+result = verify(model, "G[0,100](LacI_protein > 0.0)")
 ```
 
 ---
@@ -1091,6 +1189,99 @@ class MomentClosureSolver:
     def solve(self, t_end: float) -> MomentTrajectory: ...
 ```
 
+<a id="lna"></a>
+### LNA — `bioprover.stochastic.lna`
+
+Linear Noise Approximation with rigorous O(1/Ω) error bounds based on van Kampen's
+system-size expansion. Decomposes molecular counts as X(t) = Ω·φ(t) + √Ω·ξ(t) where
+φ(t) satisfies deterministic rate equations and ξ(t) has Gaussian fluctuations with
+covariance Σ(t) satisfying dΣ/dt = A·Σ + Σ·Aᵀ + D.
+
+#### `LNAResult`
+
+```python
+@dataclass
+class LNAResult:
+    mean_trajectory: np.ndarray       # shape (n_times, n_species)
+    covariance_trajectory: np.ndarray # shape (n_times, n_species, n_species)
+    time_points: np.ndarray
+    error_bound_mean: float           # O(1/Ω) mean approximation error
+    error_bound_covariance: float     # O(1/Ω) covariance approximation error
+    error_budget: ErrorBudget
+    steady_state_cov: Optional[np.ndarray]
+```
+
+#### `LNASolver`
+
+```python
+class LNASolver:
+    def __init__(self, reactions: List[MomentReaction], num_species: int,
+                 volume: float = 1.0) -> None: ...
+    def jacobian(self, concentrations: np.ndarray) -> np.ndarray: ...
+    def diffusion_matrix(self, concentrations: np.ndarray) -> np.ndarray: ...
+    def compute_error_bound(self, initial: np.ndarray, T: float) -> Tuple[float, float]: ...
+    def solve(self, initial: np.ndarray, t_span: Tuple[float, float],
+              t_eval: Optional[np.ndarray] = None,
+              compute_bounds: bool = True) -> LNAResult: ...
+    def steady_state_covariance(self, ss: np.ndarray) -> np.ndarray: ...
+    def find_steady_states(self, initial_guesses: Optional[List[np.ndarray]] = None,
+                           n_random: int = 20) -> List[SteadyStateInfo]: ...
+```
+
+| Method | Description |
+|--------|-------------|
+| `jacobian(concentrations)` | Numerical Jacobian of macroscopic dynamics at given state |
+| `diffusion_matrix(concentrations)` | Diffusion matrix D = S · diag(a(φ)) · Sᵀ |
+| `compute_error_bound(initial, T)` | Returns (mean_bound, cov_bound) via Kurtz 1972 theory |
+| `solve(initial, t_span, ...)` | Full LNA solve: mean trajectory + covariance + error bounds |
+| `steady_state_covariance(ss)` | Solve continuous Lyapunov equation for steady-state Σ |
+| `find_steady_states(...)` | Locate steady states via numerical root-finding |
+
+#### `BimodalityDetector`
+
+Detects when LNA is unreliable due to bistability or multimodality.
+
+```python
+class BimodalityDetector:
+    def __init__(self, solver: LNASolver) -> None: ...
+    def detect(self, initial_guesses: Optional[List[np.ndarray]] = None,
+               n_random: int = 30) -> Tuple[StabilityType, List[SteadyStateInfo]]: ...
+    def trace_determinant_test_2d(self, steady_state: np.ndarray) -> Dict[str, Any]: ...
+    def validate_lna(self, initial_concentrations: np.ndarray,
+                     t_span: Tuple[float, float]) -> Dict[str, Any]: ...
+```
+
+`StabilityType` enum: `MONOSTABLE`, `BISTABLE`, `MULTISTABLE`, `OSCILLATORY`, `UNKNOWN`.
+
+#### `StochasticAnalysisPipeline`
+
+Automatically selects the best stochastic analysis method for a given system.
+
+```python
+class StochasticAnalysisPipeline:
+    def __init__(self, reactions: List[MomentReaction], num_species: int,
+                 volume: float = 1.0,
+                 state_space_bounds: Optional[List[int]] = None) -> None: ...
+    def select_method(self, initial_concentrations: Optional[np.ndarray] = None
+                      ) -> MethodSelection: ...
+    def run(self, initial_concentrations: np.ndarray,
+            t_span: Tuple[float, float],
+            t_eval: Optional[np.ndarray] = None) -> Dict[str, Any]: ...
+```
+
+Decision logic:
+1. Large Ω (>100) + monostable → **LNA** (fastest, rigorous O(1/Ω) bounds)
+2. Small state space (<1000) → **FSP** (exact, no approximation error)
+3. Moderate systems → **Moment closure** with bimodality check
+4. Fallback → **Hybrid SSA/ODE** (Monte Carlo)
+
+#### Convenience Functions
+
+| Function | Description |
+|----------|-------------|
+| `lna_error_budget(reactions, num_species, volume, initial, T)` | Compute ErrorBudget for LNA truncation error |
+| `validate_lna_applicability(reactions, num_species, volume, initial, T)` | Check LNA preconditions and return validity report |
+
 ---
 
 <a id="ai"></a>
@@ -1209,6 +1400,108 @@ class TrainingReport:
 | `Dataset` | Container with `split()` and `k_fold()` methods. |
 | `Trainer` | SGD trainer with early stopping and learning-rate schedules. |
 | `MLEvaluator` | Cross-validation and hold-out evaluation wrapper. |
+
+<a id="online-ml"></a>
+### Online ML — `bioprover.ai.online_learner`
+
+Online adaptation from CEGAR verification traces with out-of-distribution
+detection and ablation experiment support.
+
+#### `CEGARTraceEntry`
+
+```python
+@dataclass
+class CEGARTraceEntry:
+    circuit_features: np.ndarray   # feature vector for the circuit
+    predicate_index: int           # which predicate was selected
+    success: bool                  # whether refinement succeeded
+    iterations: int                # CEGAR iteration number
+    robustness_delta: float        # change in robustness
+    timestamp: float               # wall-clock time
+```
+
+#### `OnlineLearner`
+
+Incremental MLP learner with exponential moving average (EMA) weights,
+priority replay buffer, and cosine-annealed learning rate.
+
+```python
+class OnlineLearner:
+    def __init__(self, feature_dim: int, n_predicates: int = 50,
+                 hidden_dims: Optional[List[int]] = None,
+                 lr: float = 0.001, buffer_capacity: int = 5000) -> None: ...
+    def record_trace(self, entry: CEGARTraceEntry) -> None: ...
+    def update(self, batch_size: int = 16) -> float: ...
+    def predict(self, circuit_features: np.ndarray,
+                candidate_indices: Optional[List[int]] = None
+                ) -> np.ndarray: ...
+    def prediction_accuracy(self) -> float: ...
+    def get_metrics(self) -> Dict[str, Any]: ...
+    def save(self, path: str) -> None: ...
+    @classmethod
+    def load(cls, path: str) -> "OnlineLearner": ...
+```
+
+#### `AblationController`
+
+Controls ablation experiments across predicate selection strategies.
+
+```python
+class AblationMode(Enum):
+    FULL = auto()              # ML predictor + domain heuristics
+    RANDOM = auto()            # Uniform random selection
+    DOMAIN_HEURISTIC = auto()  # Domain heuristics only (no ML)
+    NO_ML = auto()             # Disable all ML, use fixed ordering
+```
+
+```python
+class AblationController:
+    def __init__(self, feature_dim: int, n_predicates: int = 50) -> None: ...
+    def set_mode(self, mode: AblationMode) -> None: ...
+    def begin_run(self) -> None: ...
+    def record_step(self, success: bool) -> None: ...
+    def end_run(self, converged: bool, iterations: int) -> AblationRunMetrics: ...
+    def select_predicate(self, circuit_features: np.ndarray,
+                         candidates: List[int]) -> int: ...
+    def get_results(self) -> Dict[str, List[AblationRunMetrics]]: ...
+    def generate_report(self) -> Dict[str, Any]: ...
+```
+
+#### `OutOfDistributionDetector`
+
+Mahalanobis-distance-based OOD detector with incremental covariance updates.
+
+```python
+class OutOfDistributionDetector:
+    def __init__(self, feature_dim: int, threshold_percentile: float = 95.0,
+                 min_samples: int = 30) -> None: ...
+    def fit_incremental(self, x: np.ndarray) -> None: ...
+    def fit_batch(self, X: np.ndarray) -> None: ...
+    def mahalanobis_distance(self, x: np.ndarray) -> float: ...
+    def is_ood(self, x: np.ndarray) -> bool: ...
+    def ood_detection_rate(self) -> float: ...
+    def false_positive_rate(self) -> float: ...
+    def get_metrics(self) -> Dict[str, Any]: ...
+```
+
+#### `OnlineCEGARIntegration`
+
+End-to-end integration of online learning with the CEGAR loop.
+
+```python
+class OnlineCEGARIntegration:
+    def __init__(self, feature_dim: int, n_predicates: int = 50,
+                 ablation_mode: Optional[AblationMode] = None) -> None: ...
+    def select_predicate(self, candidates: List[int],
+                         circuit_features: np.ndarray) -> int: ...
+    def report_outcome(self, predicate_index: int, success: bool,
+                       robustness_delta: float = 0.0) -> None: ...
+    def step(self, candidates: List[int], circuit_features: np.ndarray,
+             success: bool) -> int: ...
+    def cumulative_regret(self) -> float: ...
+    def iteration_count(self) -> int: ...
+    def ood_fallback_count(self) -> int: ...
+```
 
 ---
 
@@ -1330,6 +1623,132 @@ class WellFormednessChecker:
 | `FixedPointState` | Iteration snapshot with assumptions, guarantees, verification results. |
 | `AGWellFormedness` | Result of well-formedness checks with coupling metrics. |
 | `AGFailureDiagnostics` | Coupling matrix, spectral radius, failure suggestions. |
+
+<a id="ag-soundness"></a>
+### AG Soundness — `bioprover.compositional.ag_soundness`
+
+Formal soundness proofs for assume-guarantee composition of ODE systems.
+Implements three theorems with explicit sufficient conditions grounded in
+differential inequality theory, Gronwall's inequality, and spectral analysis.
+
+#### `SoundnessProver`
+
+Unified orchestrator for the three composition theorems.
+
+```python
+class SoundnessProver:
+    def __init__(self, modules: List[ModuleODE], contracts: List[Contract],
+                 lipschitz_matrix: np.ndarray) -> None: ...
+    @property
+    def n_modules(self) -> int: ...
+    @property
+    def spectral_radius(self) -> float: ...
+    @property
+    def is_contractive(self) -> bool: ...
+    def verify_lipschitz_bounds(self, test_points=None, n_samples=100
+                                ) -> List[ConditionCheckResult]: ...
+    def compute_coupling_error(self, time_horizon: float) -> float: ...
+    def compute_composed_robustness(self, time_horizon: float) -> Tuple[float, float]: ...
+    def prove_composition(self, time_horizon: float) -> AGSoundnessCertificate: ...
+    def prove_convergence(self) -> AGSoundnessCertificate: ...
+    def full_proof(self, time_horizon: float) -> AGSoundnessCertificate: ...
+    def combined_annotation(self, time_horizon: float) -> SoundnessAnnotation: ...
+```
+
+```python
+prover = SoundnessProver(
+    modules=[m1, m2, m3],
+    contracts=[c1, c2, c3],
+    lipschitz_matrix=np.array([
+        [0.0, 0.3, 0.1],
+        [0.2, 0.0, 0.4],
+        [0.1, 0.2, 0.0],
+    ]),
+)
+cert = prover.prove_composition(time_horizon=10.0)
+print(cert.summary())
+```
+
+#### `Theorem1_AGComposition`
+
+AG composition rule for ODE systems with Lipschitz coupling.
+Given n modules with ODE dynamics dx_i/dt = f_i(x_i, y_i), verifies that
+isolated guarantees transfer to the composed system when ρ(L) < 1.
+
+```python
+class Theorem1_AGComposition:
+    @staticmethod
+    def check_conditions(modules: List[ModuleODE], lipschitz_matrix: np.ndarray,
+                         isolation_verified: Optional[List[bool]] = None,
+                         contracts_well_formed: bool = True
+                         ) -> List[ConditionCheckResult]: ...
+    @staticmethod
+    def prove(modules: List[ModuleODE], lipschitz_matrix: np.ndarray, **kwargs
+              ) -> AGSoundnessCertificate: ...
+```
+
+Conditions checked: (C1) isolation verification, (C2) Lipschitz coupling,
+(C3) spectral radius ρ(L) < 1, (C4) well-formed contract network.
+
+#### `Theorem2_RobustnessComposition`
+
+Quantitative robustness bound: ρ_system ≥ min_i(ρ_i) − E_coupling(T).
+
+```python
+class Theorem2_RobustnessComposition:
+    @staticmethod
+    def compute_composed_robustness(modules: List[ModuleODE],
+                                    coupling_analysis: CouplingAnalysis,
+                                    time_horizon: float
+                                    ) -> Tuple[float, float]: ...
+    @staticmethod
+    def check_conditions(modules, coupling_analysis, time_horizon
+                         ) -> List[ConditionCheckResult]: ...
+    @staticmethod
+    def prove(modules, coupling_analysis, time_horizon
+              ) -> AGSoundnessCertificate: ...
+```
+
+#### `Theorem3_CircularAGConvergence`
+
+Convergence analysis for circular AG iteration. Convergence iff ρ(L) < 1,
+with iteration bound K = ⌈log(C/ε) / (−log(ρ(L)))⌉.
+
+```python
+class Theorem3_CircularAGConvergence:
+    @staticmethod
+    def required_iterations(spectral_radius: float, initial_error: float,
+                            tolerance: float) -> int: ...
+    @staticmethod
+    def error_after_k_iterations(spectral_radius: float, initial_error: float,
+                                  k: int) -> float: ...
+    @staticmethod
+    def check_conditions(coupling_analysis: CouplingAnalysis,
+                         tolerance: float = 1e-6) -> List[ConditionCheckResult]: ...
+    @staticmethod
+    def prove(coupling_analysis: CouplingAnalysis, tolerance: float = 1e-6
+              ) -> AGSoundnessCertificate: ...
+```
+
+#### Supporting Classes
+
+| Class | Purpose |
+|-------|---------|
+| `ProofStatus` | Enum: `PROVED`, `FAILED`, `PARTIAL`, `UNKNOWN`. |
+| `ConditionCheckResult` | Result of checking a single theorem condition. |
+| `CouplingAnalysis` | Spectral analysis: spectral_radius, dominant_eigenvalue, is_contractive. |
+| `AGSoundnessCertificate` | Full proof certificate with conditions, theorem name, and summary. |
+| `ModuleODE` | Module descriptor with dynamics function, species count, robustness margin. |
+
+#### Utility Functions
+
+| Function | Description |
+|----------|-------------|
+| `compute_spectral_radius(matrix)` | Spectral radius and dominant eigenvalue of a matrix |
+| `analyze_coupling(lipschitz_matrix)` | Full spectral analysis of the coupling matrix |
+| `gronwall_error_bound(L, e0, T)` | Gronwall's inequality error bound |
+| `estimate_lipschitz_constant(f, domain, n_samples)` | Numerical Lipschitz constant estimation |
+| `estimate_coupling_matrix(modules)` | Estimate coupling matrix from module dynamics |
 
 ---
 
@@ -1472,6 +1891,64 @@ class AblationSummary:
     results: List[AblationRunResult]
 ```
 
+<a id="extended-benchmarks"></a>
+### Extended Benchmarks — `bioprover.evaluation.extended_benchmarks`
+
+11 additional benchmark circuits covering enzymatic cascades (Michaelis-Menten),
+allosteric regulation (MWC model), and multi-feedback oscillators (3–12 species).
+
+#### `ExtendedBenchmarkSuite`
+
+```python
+class ExtendedBenchmarkSuite:
+    @classmethod
+    def get_all_circuits(cls) -> List[BenchmarkCircuit]: ...
+    @classmethod
+    def get_by_kinetics(cls, kinetics_type: str) -> List[BenchmarkCircuit]: ...
+    @classmethod
+    def get_by_topology(cls, topology_type: str) -> List[BenchmarkCircuit]: ...
+    @classmethod
+    def get_by_difficulty(cls, min_difficulty: BenchmarkDifficulty = BenchmarkDifficulty.EASY,
+                          max_difficulty: BenchmarkDifficulty = BenchmarkDifficulty.FRONTIER
+                          ) -> List[BenchmarkCircuit]: ...
+    @classmethod
+    def get_by_tags(cls, tags: Sequence[str]) -> List[BenchmarkCircuit]: ...
+    @classmethod
+    def get_combined_suite(cls) -> List[BenchmarkCircuit]: ...
+    @classmethod
+    def coverage_summary(cls) -> Dict[str, Any]: ...
+```
+
+```python
+from bioprover.evaluation.extended_benchmarks import ExtendedBenchmarkSuite
+
+# List all extended circuits
+for c in ExtendedBenchmarkSuite.get_all_circuits():
+    print(f"{c.name}: {c.category}, {c.difficulty.name}")
+
+# Filter by kinetics type
+mm_circuits = ExtendedBenchmarkSuite.get_by_kinetics("michaelis_menten")
+
+# Get combined suite (original + extended)
+full_suite = ExtendedBenchmarkSuite.get_combined_suite()
+```
+
+#### Extended Circuit Generators
+
+| Function | Kinetics | Species | Description |
+|----------|----------|---------|-------------|
+| `enzymatic_cascade_mm()` | Michaelis-Menten | 6 | Three-enzyme cascade with substrate/product |
+| `competitive_inhibition_mm()` | Michaelis-Menten | 5 | Competitive inhibition of enzymatic reaction |
+| `substrate_channeling_mm()` | Michaelis-Menten | 7 | Substrate channeling between enzymes |
+| `mwc_allosteric_switch()` | MWC | 4 | Monod-Wyman-Changeux allosteric switch |
+| `allosteric_transcription_factor()` | MWC | 6 | Allosteric TF with ligand binding |
+| `dual_feedback_oscillator()` | Hill | 4 | Positive + negative feedback oscillator |
+| `three_node_competitive_network()` | Hill | 6 | Three-node competitive inhibition |
+| `iffl_adaptation()` | Hill | 3 | Incoherent feed-forward loop adaptation |
+| `repressilator_with_reporters()` | Hill | 6 | Repressilator with fluorescent reporters |
+| `signaling_cascade_10()` | Hill/MM | 10 | 10-species signaling cascade |
+| `metabolic_pathway_regulated()` | MM/Hill | 12 | Regulated metabolic pathway |
+
 ---
 
 <a id="visualization"></a>
@@ -1527,7 +2004,7 @@ bioprover verify -m MODEL -s SPEC [--mode MODE] [--timeout T] [--format FMT] [-o
 
 | Flag | Description |
 |------|-------------|
-| `-m, --model` | Path to SBML model file. |
+| `-m, --model` | Path to model file (SBML or `.sbol`). Auto-detects SBOL by extension. |
 | `-s, --spec` | Bio-STL specification (string or `.stl` file). |
 | `--mode` | `full`, `bounded`, or `compositional`. |
 | `--timeout` | Wall-clock timeout in seconds (default: 300). |
@@ -1691,3 +2168,75 @@ print(budget.is_sound)           # True if all finite
 | `propagate_errors_with_lipschitz(sources)` | Lipschitz-amplified error composition |
 | `compute_moment_closure_bound(n, k, N, L_f)` | Theorem 4 truncation bound |
 | `compute_discretization_bound(h, p, L, T, C)` | Grönwall discretization bound |
+
+---
+
+<a id="bio-stl-templates"></a>
+## 19. Bio-STL Templates — `bioprover.spec.templates`
+
+15 reusable Bio-STL specification templates covering common biological circuit
+behaviours.
+
+### `TemplateLibrary`
+
+```python
+class TemplateLibrary:
+    def __init__(self, *, load_builtins: bool = True) -> None: ...
+    def register(self, template: SpecificationTemplate) -> None: ...
+    def get(self, name: str) -> Optional[SpecificationTemplate]: ...
+    @property
+    def names(self) -> List[str]: ...
+    @property
+    def all_templates(self) -> List[SpecificationTemplate]: ...
+    def search_by_category(self, category: str) -> List[SpecificationTemplate]: ...
+    def search_by_keyword(self, keyword: str) -> List[SpecificationTemplate]: ...
+    @staticmethod
+    def compose(*specs: STLFormula) -> STLFormula: ...
+    def documentation(self) -> str: ...
+```
+
+```python
+from bioprover.spec.templates import TemplateLibrary
+
+lib = TemplateLibrary()
+tmpl = lib.get("sustained_oscillation")
+formula = tmpl.instantiate(species="lacI", period_min=20, period_max=60,
+                           amplitude_high=8.0, amplitude_low=2.0)
+```
+
+### `SpecificationTemplate`
+
+```python
+@dataclass
+class SpecificationTemplate:
+    name: str
+    description: str
+    parameters: List[TemplateParameter]
+    builder: Optional[Callable]
+    category: str
+    notes: str
+    def instantiate(self, **kwargs) -> STLFormula: ...
+    @property
+    def parameter_names(self) -> List[str]: ...
+    def documentation(self) -> str: ...
+```
+
+### Built-in Templates
+
+| # | Name | Category | Description |
+|---|------|----------|-------------|
+| 1 | `correct_boolean_logic` | logic | Genetic gate implements correct Boolean logic (NOT, AND, OR) |
+| 2 | `oscillation` | dynamic | Sustained periodic oscillation with period and amplitude |
+| 3 | `bistability` | memory | Two stable steady states with switching |
+| 4 | `adaptation` | dynamic | Perfect adaptation: transient response then return to baseline |
+| 5 | `monotone_dose_response` | transfer_function | Monotone input-output relationship |
+| 6 | `pulse_generation` | dynamic | Transient pulse: spike above level then return |
+| 7 | `steady_state_convergence` | stability | SS[T,ε](φ): convergence to target within tolerance band |
+| 8 | `rise_time` | performance | Output reaches threshold within specified rise time |
+| 9 | `overshoot_constraint` | performance | Output must not exceed maximum concentration |
+| 10 | `separation` | memory | Two signals maintain minimum separation (toggle-switch) |
+| 11 | `damped_oscillation` | dynamic | Successive peak amplitudes decrease by decay factor α |
+| 12 | `sustained_oscillation` | dynamic | G[T,T_end](F[0,P](x>A_hi) ∧ F[0,P](x<A_lo)) |
+| 13 | `probability_threshold` | stochastic | P(G[0,T](x > θ)) ≥ p_min |
+| 14 | `bimodal_steady_state` | stochastic | G[T,T_end](|x−m1|<sep/2 ∨ |x−m2|<sep/2) |
+| 15 | `switching_rate` | stochastic | Bounded noise-induced switching between bistable states |

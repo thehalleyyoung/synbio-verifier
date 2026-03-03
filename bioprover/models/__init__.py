@@ -63,6 +63,16 @@ from .sbml_import import (
     parse_sbml_file,
     parse_sbml_string,
 )
+from .sbol_import import (
+    SBOLImporter,
+    parse_sbol_file,
+    parse_sbol_string,
+)
+from .genbank_import import (
+    GenBankImporter,
+    parse_genbank_file,
+    parse_genbank_string,
+)
 
 __all__ = [
     # species
@@ -119,4 +129,12 @@ __all__ = [
     "GenericKineticLaw",
     "parse_sbml_file",
     "parse_sbml_string",
+    # sbol_import
+    "SBOLImporter",
+    "parse_sbol_file",
+    "parse_sbol_string",
+    # genbank_import
+    "GenBankImporter",
+    "parse_genbank_file",
+    "parse_genbank_string",
 ]

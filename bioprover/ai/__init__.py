@@ -67,6 +67,18 @@ from bioprover.ai.robustness_surrogate import (
     thompson_sampling,
     upper_confidence_bound,
 )
+from bioprover.ai.online_learner import (
+    AblationController,
+    AblationMode,
+    AblationRunMetrics,
+    CEGARTraceEntry,
+    LearningCurvePoint,
+    OnlineCEGARIntegration,
+    OnlineLearner,
+    OutOfDistributionDetector,
+    PriorityReplayBuffer,
+    create_online_cegar_system,
+)
 from bioprover.ai.training_pipeline import (
     CircuitData,
     CosineAnnealingLR,
@@ -148,6 +160,17 @@ __all__ = [
     "optimize_acquisition",
     "thompson_sampling",
     "upper_confidence_bound",
+    # online_learner
+    "AblationController",
+    "AblationMode",
+    "AblationRunMetrics",
+    "CEGARTraceEntry",
+    "LearningCurvePoint",
+    "OnlineCEGARIntegration",
+    "OnlineLearner",
+    "OutOfDistributionDetector",
+    "PriorityReplayBuffer",
+    "create_online_cegar_system",
     # training_pipeline
     "CircuitData",
     "CosineAnnealingLR",

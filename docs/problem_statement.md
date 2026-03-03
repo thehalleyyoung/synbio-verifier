@@ -171,4 +171,4 @@ BioProver runs entirely on a modern laptop CPU (e.g., Apple M2 or Intel i7, 8 co
 
 ## Slug
 
-`bioprover-ai-cegar-synbio-verify-repair`
+`synbio-verifier`

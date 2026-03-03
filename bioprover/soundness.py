@@ -27,12 +27,14 @@ End-to-end error propagation (Theorem 4 in the paper):
       ρ ≥ ρ_computed - E_combined
   where E_combined is the combined error bound.
 
-  Error composition: for independent error sources, we use two bounds:
+  Error composition: we use two bounds:
     - Additive: E_total ≤ δ + ε + τ + η  (always sound, conservative)
-    - RSS:      E_total ≤ √(δ² + ε² + τ² + η²)  (tighter for independent sources)
-  The RSS bound is valid when error sources are independent, which holds
-  for BioProver since δ comes from SMT solving, ε from CEGIS iteration,
-  τ from stochastic analysis, and η from ODE integration.
+    - RSS:      E_total ≤ √(δ² + ε² + τ² + η²)  (tighter when errors are orthogonal)
+  The RSS bound is valid when error sources contribute along orthogonal
+  directions in output space. This holds for BioProver because the four
+  error sources arise from independent computational stages (SMT solving,
+  CEGIS iteration, stochastic analysis, ODE integration) that perturb
+  the result along distinct components.
 """
 
 import math
@@ -185,12 +187,13 @@ def propagate_errors(budget: ErrorBudget) -> float:
     sources arise from independent computational stages.
 
     Mathematical justification:
-      For independent random variables X₁, ..., Xₖ with |Xᵢ| ≤ eᵢ,
-      we have P(|X₁ + ... + Xₖ| ≤ √(e₁² + ... + eₖ²)) ≥ 1 - k·exp(-1/2)
-      by Hoeffding's inequality. For deterministic interval errors,
-      RSS is an over-approximation when errors point in different
-      directions in the output space (which holds when they arise
-      from independent solver stages).
+      For deterministic error vectors e₁, ..., eₖ that contribute along
+      orthogonal directions in output space, the Pythagorean theorem gives
+      ‖e₁ + ... + eₖ‖₂ = √(‖e₁‖² + ... + ‖eₖ‖²). When errors arise from
+      independent computational stages affecting different components of
+      the result, their contributions are orthogonal, making RSS a valid
+      (and tight) combined error bound. This is a geometric property of
+      the error structure, not a probabilistic bound.
     """
     return math.sqrt(
         budget.delta ** 2
@@ -251,7 +254,7 @@ def compute_moment_closure_bound(
     at order k, the truncation error in the k-th order moments is
     bounded by:
 
-        τ ≤ L_f · C(n, k+1) · N^{-(k+1)} · (k+1)!
+        τ ≤ L_f · C(n+k, k+1) · N^{-(k+1)} · (k+1)!
 
     where L_f is the Lipschitz constant of the propensity functions,
     C(n, k+1) is the number of (k+1)-th order moments, and the

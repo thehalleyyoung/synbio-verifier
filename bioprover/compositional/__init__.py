@@ -45,6 +45,16 @@ from bioprover.compositional.proof_composition import (
     ProofValidator,
     ProofCertificate,
 )
+from bioprover.compositional.ag_soundness import (
+    AGSoundnessCertificate,
+    CouplingAnalysis,
+    ModuleODE,
+    ProofStatus,
+    SoundnessProver,
+    Theorem1_AGComposition,
+    Theorem2_RobustnessComposition,
+    Theorem3_CircularAGConvergence,
+)
 
 __all__ = [
     # contracts
@@ -80,4 +90,13 @@ __all__ = [
     "ProofTree",
     "ProofValidator",
     "ProofCertificate",
+    # AG soundness
+    "AGSoundnessCertificate",
+    "CouplingAnalysis",
+    "ModuleODE",
+    "ProofStatus",
+    "SoundnessProver",
+    "Theorem1_AGComposition",
+    "Theorem2_RobustnessComposition",
+    "Theorem3_CircularAGConvergence",
 ]

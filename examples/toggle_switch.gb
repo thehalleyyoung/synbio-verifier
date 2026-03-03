@@ -1,0 +1,51 @@
+LOCUS       toggle_switch       4500 bp    DNA     circular SYN 01-JAN-2024
+DEFINITION  Genetic toggle switch circuit (Gardner et al., 2000).
+ACCESSION   TOGGLE001
+VERSION     TOGGLE001.1
+KEYWORDS    synthetic biology; toggle switch; bistable.
+SOURCE      synthetic construct
+  ORGANISM  synthetic construct
+            other sequences; artificial sequences.
+COMMENT     A two-gene mutual repression toggle switch.  LacI represses
+            production of TetR, and TetR represses production of LacI,
+            creating a bistable switch.
+FEATURES             Location/Qualifiers
+     promoter        1..100
+                     /gene="pTet"
+                     /note="TetR-repressible promoter"
+     RBS             101..130
+                     /gene="RBS1"
+                     /note="ribosome binding site for LacI"
+     CDS             131..1200
+                     /gene="LacI"
+                     /product="LacI repressor protein"
+                     /note="lac repressor"
+     terminator      1201..1300
+                     /gene="T1"
+                     /note="transcription terminator"
+     regulatory      1301..1400
+                     /regulatory_class="repressor_binding_site"
+                     /gene="TetR"
+                     /note="TetR represses LacI"
+                     /bound_moiety="TetR"
+     promoter        1501..1600
+                     /gene="pLac"
+                     /note="LacI-repressible promoter"
+     RBS             1601..1630
+                     /gene="RBS2"
+                     /note="ribosome binding site for TetR"
+     CDS             1631..2500
+                     /gene="TetR"
+                     /product="TetR repressor protein"
+                     /note="tetracycline repressor"
+     terminator      2501..2600
+                     /gene="T2"
+                     /note="transcription terminator"
+     regulatory      2601..2700
+                     /regulatory_class="repressor_binding_site"
+                     /gene="LacI"
+                     /note="LacI represses TetR"
+                     /bound_moiety="LacI"
+ORIGIN
+        1 atgcatgcat gcatgcatgc atgcatgcat gcatgcatgc atgcatgcat gcatgcatgc
+//
